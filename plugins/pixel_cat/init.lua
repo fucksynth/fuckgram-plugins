@@ -2,8 +2,9 @@
 -- (tg.ui.overlay), которая ездит за ним по окну; кадры собираются из
 -- частей ниже. Щелчок — погладить, перетаскивание — понести (клиент
 -- двигает плашку сам; где перетаскивания ещё нет, щелчок работает как
--- раньше). Что котик говорит и как называются окрасы — в locales/*.json
--- (plugin.t).
+-- раньше). Окрас (и свой), размер, видимость, характер и где котик живёт —
+-- в настройках; каждая читается на ходу. Что котик говорит и как
+-- называются пункты — в locales/*.json (plugin.t).
 
 ------------------------------------------------------------------- art
 
@@ -590,9 +591,66 @@ local function frame(name)
 	return f
 end
 
+--------------------------------------------------------------- settings
+
+-- Every setting is read when it is needed, so a change works at once.
+local function setting(key, default)
+	return plugin.settings.get(key, default)
+end
+
+-- A selector's value: 1..count, or the default.
+local function choice(key, default, count)
+	local value = math.floor(tonumber(setting(key, default)) or default)
+	if value < 1 or value > count then
+		return default
+	end
+	return value
+end
+
+-- Switches that are on by default.
+local function flag(key)
+	return setting(key, true) ~= false
+end
+
+local function scale()
+	local value = math.floor(tonumber(setting("size", 3)) or 3)
+	return math.max(1, math.min(6, value))
+end
+
+local function speed()
+	return math.max(0.25, (tonumber(setting("speed", 2)) or 2) / 2)
+end
+
+local function opacity()
+	return math.max(0.4, math.min(1, (tonumber(setting("opacity", 100)) or 100) / 100))
+end
+
+-- Lazy .. restless: how long it rests and how often it moves.
+local ACTIVITY = {
+	{ rest = 1.8, move = 0.45 },
+	{ rest = 1.35, move = 0.7 },
+	{ rest = 1, move = 1 },
+	{ rest = 0.7, move = 1.4 },
+	{ rest = 0.45, move = 1.9 },
+}
+local function activity()
+	return ACTIVITY[choice("activity", 3, #ACTIVITY)]
+end
+
+-- Silent .. chatty: how likely a phrase is said.
+local TALK = { 0, 0.4, 1, 1.8 }
+local function talkativeness()
+	return TALK[choice("talk", 3, #TALK)]
+end
+
+local HOME_ANYWHERE, HOME_FLOOR, HOME_SPOT = 1, 2, 3
+local function home()
+	return choice("home", HOME_ANYWHERE, 3)
+end
+
 ------------------------------------------------------------------ coats
 
--- In the order of the "Coat" selector.
+-- In the order of the "Coat" selector; "Custom" comes after them.
 local COATS = {
 	{ -- ginger tabby
 		o = "#4a2410", f = "#f0a04b", s = "#d27d2c", h = "#ffc27a", t = "#c86a1e",
@@ -627,16 +685,117 @@ local COATS = {
 		a = "#e8923a", as = "#c9752a", c = "#3b3431", cs = "#2a2421",
 	},
 }
+local CUSTOM = #COATS + 1
+
 -- What a key falls back to when a coat does not set it.
 local FALLBACK = { l = "o", t = "f", u = "t", x = "f", m = "b", p = "f" }
 local COMMON = { i = "#ff9fb2", n = "#ff7896", r = "#e8506e", k = "#1e1a18", w = "#ffffff" }
-for _, coat in ipairs(COATS) do
+local function complete(coat)
 	for key, value in pairs(COMMON) do
 		if coat[key] == nil then
 			coat[key] = value
 		end
 	end
+	return coat
 end
+for _, coat in ipairs(COATS) do
+	complete(coat)
+end
+
+-- The custom coat: a fur colour (in the order of the "Fur colour"
+-- selector; dark ones get light lines for closed eyes), a pattern and eyes.
+local FURS = {
+	{ "#2f2f38", dark = true }, -- black
+	{ "#5d5f69", dark = true }, -- smoky
+	{ "#9aa6b2" }, -- grey
+	{ "#8394ad" }, -- blue
+	{ "#b9a6b8" }, -- lilac
+	{ "#f7f7f4" }, -- white
+	{ "#f3dfbf" }, -- cream
+	{ "#d6bb94" }, -- fawn
+	{ "#e9b85a" }, -- golden
+	{ "#ec8f3e" }, -- ginger
+	{ "#8b6243", dark = true }, -- brown
+	{ "#5a3828", dark = true }, -- chocolate
+}
+local PATTERN_NONE, PATTERN_STRIPES, PATTERN_PATCHES, PATTERN_TUXEDO, PATTERN_POINTS = 1, 2, 3, 4, 5
+local EYE_COLORS = { "#1e1a18", "#5fae3a", "#a88a35", "#e0a526", "#d0702a", "#3b7fd9" }
+
+local BLACK, WHITE = "#000000", "#ffffff"
+
+-- a + (b - a) * t for two "#rrggbb" colours.
+local function mix(a, b, t)
+	local function part(color, i)
+		return tonumber(color:sub(i, i + 1), 16)
+	end
+	local function blend(i)
+		return math.floor(part(a, i) + (part(b, i) - part(a, i)) * t + 0.5)
+	end
+	return string.format("#%02x%02x%02x", blend(2), blend(4), blend(6))
+end
+
+local function custom_coat(fur, pattern, eyes)
+	local entry = FURS[fur] or FURS[3]
+	local base = entry[1]
+	local coat = {
+		f = base,
+		s = mix(base, BLACK, 0.18),
+		h = mix(base, WHITE, 0.28),
+		o = mix(base, BLACK, 0.72),
+		b = mix(base, WHITE, entry.dark and 0.1 or 0.55),
+		k = EYE_COLORS[eyes] or EYE_COLORS[1],
+	}
+	if entry.dark then
+		coat.l, coat.i, coat.n = "#8c8c9e", "#d77a92", "#d77a92"
+	end
+	if pattern == PATTERN_STRIPES then
+		coat.t = mix(base, BLACK, 0.38)
+		coat.x = coat.t
+		coat.b = mix(base, "#fff6e8", 0.65)
+	elseif pattern == PATTERN_PATCHES then -- patches on white
+		coat.f, coat.s, coat.h, coat.b = "#faf6ef", "#e3dccf", WHITE, WHITE
+		coat.o, coat.l = mix(base, BLACK, 0.6), nil
+		coat.i, coat.n = nil, nil
+		coat.a, coat.as = base, mix(base, BLACK, 0.18)
+		coat.c, coat.cs = mix(base, BLACK, 0.55), mix(base, BLACK, 0.65)
+	elseif pattern == PATTERN_TUXEDO then
+		coat.b, coat.m, coat.p = "#f4f4f1", "#f4f4f1", "#f4f4f1"
+	elseif pattern == PATTERN_POINTS then -- light body, dark face, ears, paws, tail
+		local light = mix(base, "#fff8ec", 0.78)
+		coat.f, coat.s, coat.h = light, mix(light, BLACK, 0.12), mix(light, WHITE, 0.4)
+		coat.u = mix(base, light, 0.25) -- a darker, ringed tail
+		coat.x, coat.p, coat.m = base, base, mix(base, light, 0.2)
+		coat.b = mix(light, WHITE, 0.5)
+		coat.o, coat.l = mix(base, BLACK, 0.55), nil
+		coat.i, coat.n = nil, nil
+	end
+	return complete(coat)
+end
+
+-- The chosen coat: an index of COATS, or "c<fur>.<pattern>.<eyes>".
+local function coat_key()
+	local index = choice("coat", 1, CUSTOM)
+	if index == CUSTOM then
+		return "c" .. choice("fur", 10, #FURS) .. "." .. choice("pattern", PATTERN_STRIPES, 5)
+			.. "." .. choice("eyes", 2, #EYE_COLORS)
+	end
+	return index
+end
+
+local CUSTOM_COATS = {}
+local function palette(key)
+	if type(key) == "number" then
+		return COATS[key] or COATS[1]
+	end
+	local coat = CUSTOM_COATS[key]
+	if not coat then
+		local fur, pattern, eyes = key:match("^c(%d+)%.(%d+)%.(%d+)$")
+		coat = custom_coat(tonumber(fur), tonumber(pattern), tonumber(eyes))
+		CUSTOM_COATS[key] = coat
+	end
+	return coat
+end
+
 local FUR = { f = true, s = true, h = true, t = true, u = true, x = true }
 
 local function cell_color(coat, ch, patch)
@@ -657,20 +816,20 @@ local function cell_color(coat, ch, patch)
 	return value
 end
 
--- One rectangle per run of a color in a row: few calls per paint.
+-- One rectangle per run of a colour in a row: few calls per paint.
 local RUNS = {}
-local function runs(coat_index, name)
-	local cache = RUNS[coat_index]
+local function runs(key, name)
+	local cache = RUNS[key]
 	if not cache then
 		cache = {}
-		RUNS[coat_index] = cache
+		RUNS[key] = cache
 	end
 	local list = cache[name]
 	if list then
 		return list
 	end
 	local f = frame(name)
-	local coat = COATS[coat_index]
+	local coat = palette(key)
 	list = {}
 	for y = 1, H do
 		local line, pline = f.rows[y], f.patch[y]
@@ -697,8 +856,8 @@ end
 
 -- Draws a frame with its top-left at ox, oy; `shift` moves rows sideways
 -- (in cells, for the swing of a carried cat).
-local function draw_frame(c, name, coat_index, ox, oy, s, dir, shift)
-	local list = runs(coat_index, name)
+local function draw_frame(c, name, key, ox, oy, s, dir, shift)
+	local list = runs(key, name)
 	for i = 1, #list do
 		local run = list[i]
 		local row, col, n = run[1], run[2], run[3]
@@ -712,7 +871,7 @@ local function draw_frame(c, name, coat_index, ox, oy, s, dir, shift)
 	end
 end
 
--- Small pixel pictures for the effects, outlined like the cat.
+-- Small pixel pictures for the effects, outlined like the cat unless plain.
 local function glyph(rows, colors, plain)
 	local w, h = #rows[1] + 2, #rows + 2
 	local cells = {}
@@ -777,19 +936,6 @@ end
 
 -------------------------------------------------------------- the cat
 
-local function setting(key, default)
-	return plugin.settings.get(key, default)
-end
-
-local function scale()
-	return math.max(2, math.min(5, math.floor(setting("size", 3))))
-end
-
-local function coat_index()
-	local index = math.floor(setting("coat", 1))
-	return COATS[index] and index or 1
-end
-
 local function rnd(a, b)
 	return a + math.random() * (b - a)
 end
@@ -817,7 +963,9 @@ local cat = {
 	swish_until = 0,
 	bubble = nil,
 	bubble_until = 0,
-	bubble_w = nil, -- the measured text width, from the last paint
+	bubble_w = nil, -- measured text widths, from the last paint
+	tag_w = nil,
+	tag_text = nil,
 	mouth_until = 0,
 	next_z = 0,
 	fx = {},
@@ -825,6 +973,8 @@ local cat = {
 	bats = 0,
 	lean = 0, -- carried: how far the lowest row swings, in cells
 	swing = 0,
+	vy = 0, -- falling to the floor, px per ms
+	bounced = false,
 	drag = nil,
 	box = nil, -- the overlay: { x, y, width, height } in the window
 }
@@ -841,15 +991,26 @@ end
 
 local BUBBLE_FONT = { size = 11, bold = true }
 local BUBBLE_MAX = 170
+local TAG_FONT = { size = 10, bold = true }
 
-local function say(text, ms)
+-- Says a phrase; `chance` (1 if not given) is scaled by the
+-- talkativeness, a silent cat says nothing.
+local function say(text, ms, chance)
+	local talk = talkativeness()
+	if talk == 0 or math.random() >= (chance or 1) * talk then
+		return
+	end
 	cat.bubble = text
 	cat.bubble_until = tg.now() + (ms or 1800)
 	cat.bubble_w = nil
 	cat.mouth_until = tg.now() + 380
 end
 
+-- Hearts, z's, dust: only with the effects on.
 local function spawn(kind, x, y, vx, vy, life, delay)
+	if not flag("effects") then
+		return
+	end
 	cat.fx[#cat.fx + 1] = {
 		kind = kind,
 		x = x,
@@ -861,17 +1022,32 @@ local function spawn(kind, x, y, vx, vy, life, delay)
 	}
 end
 
+local function dust()
+	for i = 0, 2 do
+		spawn("dust", 8 - i * 2, 23, -0.005, -0.002, 420 + i * 90)
+		spawn("dust", 25 + i * 2, 23, 0.005, -0.002, 420 + i * 90)
+	end
+end
+
 local function sprite_size()
 	local s = scale()
 	return W * s, (H + 1) * s
 end
 
+-- Night is from the "from" hour up to the "to" hour, across midnight too.
 local function night()
-	if not setting("night", true) then
+	if not flag("night") then
 		return false
 	end
+	local from = choice("night_from", 24, 24) - 1
+	local to = choice("night_to", 8, 24) - 1
 	local hour = tonumber(os.date("%H")) or 12
-	return hour >= 23 or hour < 7
+	if from == to then
+		return false
+	elseif from < to then
+		return hour >= from and hour < to
+	end
+	return hour >= from or hour < to
 end
 
 local function head_anchor(name)
@@ -883,17 +1059,67 @@ local function head_anchor(name)
 	return cx + 0.5, top
 end
 
--- Somewhere not too far, inside the window.
+-- The floor: the cat's top when its paws touch the window's bottom edge.
+local function floor_y()
+	local _, wh = tg.ui.window_size()
+	local _, sh = sprite_size()
+	return wh and math.max(0, wh - sh) or cat.y
+end
+
+-- Where the cat was put last ("stays where it was put"), kept between runs
+-- as a share of the room it has in the window.
+local function remember_spot(x, y)
+	local ww, wh = tg.ui.window_size()
+	if not ww then
+		return
+	end
+	local sw, sh = sprite_size()
+	plugin.settings.set("spot_x", math.max(0, math.min(1, x / math.max(ww - sw, 1))))
+	plugin.settings.set("spot_y", math.max(0, math.min(1, y / math.max(wh - sh, 1))))
+end
+
+local function spot()
+	local ww, wh = tg.ui.window_size()
+	local fx, fy = tonumber(setting("spot_x", nil)), tonumber(setting("spot_y", nil))
+	if not ww or not fx or not fy then
+		return cat.x, cat.y
+	end
+	local sw, sh = sprite_size()
+	return fx * math.max(ww - sw, 0), fy * math.max(wh - sh, 0)
+end
+
+local function spot_radius()
+	return 30 + 12 * scale()
+end
+
+-- Somewhere to walk to, as the home setting allows.
 local function pick_target(far)
 	local ww, wh = tg.ui.window_size()
 	if not ww then
 		return
 	end
 	local sw, sh = sprite_size()
-	local angle = math.random() * math.pi * 2
+	local where = home()
 	local distance = far and rnd(200, 500) or rnd(80, 340)
-	cat.tx = math.max(0, math.min(cat.x + math.cos(angle) * distance, ww - sw))
-	cat.ty = math.max(40, math.min(cat.y + math.sin(angle) * distance * 0.6, wh - sh))
+	local x, y
+	if where == HOME_SPOT then
+		local sx, sy = spot()
+		local r = spot_radius()
+		x, y = sx + rnd(-r, r), sy + rnd(-r, r) * 0.4
+	elseif where == HOME_FLOOR then
+		x = cat.x + (math.random() < 0.5 and -distance or distance)
+		y = wh - sh
+	else
+		local angle = math.random() * math.pi * 2
+		x = cat.x + math.cos(angle) * distance
+		y = cat.y + math.sin(angle) * distance * 0.6
+	end
+	cat.tx = math.max(0, math.min(x, ww - sw))
+	if where == HOME_FLOOR then
+		cat.ty = math.max(0, wh - sh)
+	else
+		cat.ty = math.max(where == HOME_SPOT and 0 or 40, math.min(y, wh - sh))
+	end
 end
 
 local function walk_somewhere(run)
@@ -910,11 +1136,11 @@ local function choose(options)
 	local roll = math.random() * total
 	for _, option in ipairs(options) do
 		roll = roll - option[2]
-		if roll <= 0 then
+		if option[2] > 0 and roll <= 0 then
 			return option[1]
 		end
 	end
-	return options[#options][1]
+	return options[1][1]
 end
 
 -- Where the ball is when it lies right in front of the paws.
@@ -923,9 +1149,12 @@ local function ball_offset()
 	return cat.dir > 0 and 34 * s or -2 * s
 end
 
+local PLAY = { crouch = true, bat = true, watch = true, chase = true }
+
 local function start_play()
 	local ww = tg.ui.window_size()
-	if not ww then
+	if not ww or not flag("yarn") then
+		begin("sit", 3000)
 		return
 	end
 	local s = scale()
@@ -943,23 +1172,22 @@ end
 
 -- What to do next when nothing is going on.
 local function idle()
+	local a = activity()
 	local what = choose{
-		{ "walk", 30 },
-		{ "sit", 24 },
-		{ "groom", 12 },
+		{ "walk", 30 * a.move },
+		{ "sit", 24 * a.rest },
+		{ "groom", 12 * a.rest },
 		{ "stretch", 7 },
-		{ "nap", night() and 45 or 9 },
-		{ "play", 9 },
+		{ "nap", (night() and 45 or 9) * a.rest },
+		{ "play", flag("yarn") and 9 * a.move or 0 },
 	}
 	if what == "walk" then
-		walk_somewhere(false)
+		walk_somewhere(a.move > 1.5 and math.random() < 0.3)
 	elseif what == "sit" then
-		begin("sit", rnd(3000, 7000))
-		if math.random() < 0.18 then
-			say(pick(plugin.t("say.idle1"), plugin.t("say.idle2"), plugin.t("say.idle3")))
-		end
+		begin("sit", rnd(3000, 7000) * a.rest)
+		say(pick(plugin.t("say.idle1"), plugin.t("say.idle2"), plugin.t("say.idle3")), nil, 0.18)
 	elseif what == "groom" then
-		begin("groom", rnd(2600, 4400))
+		begin("groom", rnd(2600, 4400) * math.min(a.rest, 1.3))
 	elseif what == "stretch" then
 		begin("stretch", 1700)
 	elseif what == "nap" then
@@ -971,7 +1199,7 @@ local function idle()
 end
 
 local function sleep_ms()
-	return night() and rnd(25000, 60000) or rnd(9000, 20000)
+	return (night() and rnd(25000, 60000) or rnd(9000, 20000)) * activity().rest
 end
 
 -- A timed mode is over.
@@ -1010,9 +1238,7 @@ local function finish_mode()
 		if ball then
 			ball.vx = cat.dir * rnd(0.16, 0.26)
 			cat.bats = cat.bats + 1
-			if math.random() < 0.3 then
-				say(pick(plugin.t("say.play1"), plugin.t("say.play2")), 1300)
-			end
+			say(pick(plugin.t("say.play1"), plugin.t("say.play2")), 1300, 0.3)
 		end
 		begin("watch", 500)
 	elseif m == "watch" then
@@ -1030,7 +1256,7 @@ local function finish_mode()
 end
 
 local function pet()
-	if cat.mode == "carried" then
+	if cat.mode == "carried" or cat.mode == "fall" then
 		return
 	end
 	cat.after = nil
@@ -1041,7 +1267,7 @@ local function pet()
 	end
 	if cat.mode ~= "happy" then
 		local name = setting("name", "")
-		if name ~= "" and math.random() < 0.45 then
+		if type(name) == "string" and name ~= "" and math.random() < 0.45 then
 			say(plugin.t("say.name", name))
 		else
 			say(pick(plugin.t("say.pet1"), plugin.t("say.pet2"), plugin.t("say.pet3"),
@@ -1061,24 +1287,52 @@ local function pet()
 	end
 end
 
------------------------------------------------------------- the frame
-
--- The bubble's rectangle in the window; tw is the text width.
-local function bubble_rect(tw)
-	local s = scale()
-	local cx, top = head_anchor(cat.pose)
-	local bw = math.min(tw + 16, BUBBLE_MAX)
-	local lines = (tw + 16 > BUBBLE_MAX) and 2 or 1
-	local bh = lines * 15 + 6
-	local x = cat.x + cx * s - bw / 2
-	local y = cat.y + top * s - bh - 6
-	local ww = tg.ui.window_size() or 4096
-	x = math.max(2, math.min(x, ww - bw - 2))
-	return x, math.max(0, y), bw, bh, lines
+-- Falls down to the floor and bounces a little (the "bottom edge" home).
+local function start_fall()
+	begin("fall")
+	cat.vy = 0
+	cat.bounced = false
+	cat.pose = "hang2"
 end
 
-local function estimate(text)
-	return (utf8.len(text) or #text) * 7
+------------------------------------------------------------ the frame
+
+local function tag_text()
+	if setting("name_tag", false) ~= true then
+		return nil
+	end
+	local name = setting("name", "")
+	if type(name) ~= "string" or name == "" then
+		return nil
+	end
+	return name
+end
+
+local function estimate(text, per_char)
+	return (utf8.len(text) or #text) * per_char
+end
+
+-- The name tag and the bubble over the head, in the window: { x, y, w, h }.
+-- tag_w and bubble_w are text widths (nil: not shown).
+local function labels(tag_w, bubble_w)
+	local s = scale()
+	local cx, top = head_anchor(cat.pose)
+	local ww = tg.ui.window_size() or 4096
+	local center = cat.x + cx * s
+	local bottom = cat.y + top * s - 3
+	local tag, bubble
+	if tag_w then
+		local w, h = tag_w + 12, 15
+		tag = { math.max(1, math.min(center - w / 2, ww - w - 1)), math.max(0, bottom - h), w, h }
+		bottom = tag[2] - 2
+	end
+	if bubble_w then
+		local w = math.min(bubble_w + 16, BUBBLE_MAX)
+		local lines = (bubble_w + 16 > BUBBLE_MAX) and 2 or 1
+		local h = lines * 15 + 6
+		bubble = { math.max(2, math.min(center - w / 2, ww - w - 2)), math.max(0, bottom - h - 6), w, h, lines }
+	end
+	return tag, bubble
 end
 
 local function fx_size(p, q)
@@ -1115,9 +1369,15 @@ local function layout()
 		local g = GLYPHS.ball1
 		add(cat.ball.x - g.w * s / 2 - 4 * s, cat.y + (H - g.h) * s, (g.w + 8) * s, g.h * s + 2)
 	end
-	if cat.bubble then
-		local bx, by, bw, bh = bubble_rect(cat.bubble_w or estimate(cat.bubble))
-		add(bx, by, bw, bh + 6)
+	local name = tag_text()
+	local tag_w = name and (name == cat.tag_text and cat.tag_w or estimate(name, 6.5)) or nil
+	local bubble_w = cat.bubble and (cat.bubble_w or estimate(cat.bubble, 7)) or nil
+	local tag, bubble = labels(tag_w, bubble_w)
+	if tag then
+		add(tag[1], tag[2], tag[3], tag[4])
+	end
+	if bubble then
+		add(bubble[1], bubble[2], bubble[3], bubble[4] + 6)
 	end
 	local x, y = math.floor(x1) - 1, math.floor(y1) - 1
 	return x, y, math.ceil(x2) + 1 - x, math.ceil(y2) + 1 - y
@@ -1177,6 +1437,8 @@ local function animate(now)
 		if cat.drag and now - cat.drag.moved_at > 2600 then
 			pose = pose .. "_c"
 		end
+	elseif m == "fall" then
+		pose = cat.bounced and "land" or "hang2"
 	elseif m == "land" then
 		pose = (t < 200) and "land" or "sit1_b"
 	elseif m == "crouch" then
@@ -1190,6 +1452,10 @@ local function animate(now)
 end
 
 local function update_fx(now)
+	if not flag("effects") then
+		cat.fx = {}
+		return
+	end
 	local alive = {}
 	for _, p in ipairs(cat.fx) do
 		if now - p.t0 < p.life then
@@ -1199,14 +1465,12 @@ local function update_fx(now)
 	cat.fx = alive
 end
 
-local PLAYING = { crouch = true, bat = true, watch = true, chase = true, sit = true }
-
 local function update_ball(now, dt, ww)
 	local ball = cat.ball
 	if not ball then
 		return
 	end
-	if not ball.fade and not PLAYING[cat.mode] then
+	if not ball.fade and not PLAY[cat.mode] and cat.mode ~= "sit" then
 		ball.fade = now -- the cat lost interest
 	end
 	if ball.fade and now - ball.fade > 900 then
@@ -1230,10 +1494,10 @@ local function update_ball(now, dt, ww)
 end
 
 -- Walks or runs towards x, y; true on arrival.
-local function step_to(x, y, speed, dt)
+local function step_to(x, y, v, dt)
 	local dx, dy = x - cat.x, y - cat.y
 	local distance = math.sqrt(dx * dx + dy * dy)
-	local step = speed * dt / 1000
+	local step = v * dt / 1000
 	if math.abs(dx) > 1 then
 		cat.dir = dx > 0 and 1 or -1
 	end
@@ -1261,7 +1525,7 @@ local function swing(dt)
 	cat.lean = math.max(-7, math.min(7, cat.lean + cat.swing))
 end
 
-local function chase(ww, speed, dt)
+local function chase(ww, v, dt)
 	local ball = cat.ball
 	if not ball then
 		begin("sit", 3000)
@@ -1270,10 +1534,48 @@ local function chase(ww, speed, dt)
 	local s = scale()
 	cat.dir = (ball.x > cat.x + 16 * s) and 1 or -1
 	local x = math.max(0, math.min(ball.x - ball_offset(), ww - W * s))
-	local arrived = step_to(x, cat.y, 100 * speed, dt)
+	local arrived = step_to(x, cat.y, v, dt)
 	if arrived and ball.vx == 0 then
 		cat.dir = (ball.x > cat.x + 16 * s) and 1 or -1
 		begin("crouch", rnd(700, 1300))
+	end
+end
+
+local function fall(dt)
+	local floor = floor_y()
+	cat.vy = cat.vy + 0.0022 * dt
+	cat.y = cat.y + cat.vy * dt
+	if cat.y < floor then
+		return
+	end
+	cat.y = floor
+	if not cat.bounced and cat.vy > 0.2 then
+		cat.bounced = true
+		cat.vy = -cat.vy * 0.3
+		dust()
+	else
+		if not cat.bounced then
+			dust()
+		end
+		begin("land", 900)
+	end
+end
+
+-- The home setting: the floor keeps the cat on the bottom edge, the spot
+-- needs a place to stay at.
+local function keep_home()
+	local where = home()
+	local m = cat.mode
+	if where == HOME_FLOOR and m ~= "carried" and m ~= "fall" then
+		local floor = floor_y()
+		if cat.y < floor - 1 then
+			start_fall()
+		else
+			cat.y = floor
+			cat.ty = floor
+		end
+	elseif where == HOME_SPOT and tonumber(setting("spot_x", nil)) == nil then
+		remember_spot(cat.x, cat.y)
 	end
 end
 
@@ -1285,7 +1587,6 @@ local function tick()
 	if not ww then
 		return
 	end
-	local speed = setting("speed", 2) / 2
 	local m = cat.mode
 
 	if now > cat.blink_at then
@@ -1296,14 +1597,23 @@ local function tick()
 		cat.swish_until = now + rnd(600, 1800)
 		cat.swish_at = cat.swish_until + rnd(1200, 3800)
 	end
-	if cat.bubble and now > cat.bubble_until then
+	if cat.bubble and (now > cat.bubble_until or talkativeness() == 0) then
 		cat.bubble = nil
+	end
+	if PLAY[m] and not flag("yarn") then
+		if cat.ball then
+			cat.ball.fade = cat.ball.fade or now
+		end
+		begin("sit", 2000)
+		m = cat.mode
 	end
 
 	if m == "carried" then
 		swing(dt)
+	elseif m == "fall" then
+		fall(dt)
 	elseif m == "walk" or m == "run" then
-		local v = (m == "run" and 120 or 38) * speed
+		local v = (m == "run" and 120 or 38) * speed()
 		if step_to(cat.tx, cat.ty, v, dt) then
 			if cat.after == "hello" then
 				cat.after = nil
@@ -1314,7 +1624,7 @@ local function tick()
 			end
 		end
 	elseif m == "chase" then
-		chase(ww, speed, dt)
+		chase(ww, 100 * speed(), dt)
 	elseif m == "sleep" and now > cat.next_z then
 		cat.next_z = now + 1300
 		spawn("z", cat.dir > 0 and 27 or 0, 8, cat.dir * 0.003, -0.006, 2400)
@@ -1322,12 +1632,15 @@ local function tick()
 	if cat.until_ms > 0 and now >= cat.until_ms and cat.mode == m then
 		finish_mode()
 	end
+	if not cat.drag then
+		keep_home()
+	end
 
 	update_ball(now, dt, ww)
 	update_fx(now)
 	animate(now)
 
-	-- The window may have become smaller.
+	-- The window may have become smaller, or the cat bigger.
 	if not cat.drag then
 		local sw, sh = sprite_size()
 		cat.x = math.max(0, math.min(cat.x, ww - sw))
@@ -1337,7 +1650,7 @@ end
 
 ------------------------------------------------------------- painting
 
-local function draw_fx(c, ox, oy, s, now)
+local function draw_fx(c, ox, oy, s, now, base)
 	local q = math.max(1, s - 1)
 	for _, p in ipairs(cat.fx) do
 		local age = now - p.t0
@@ -1348,47 +1661,81 @@ local function draw_fx(c, ox, oy, s, now)
 			local g = GLYPHS[p.kind]
 			if g then
 				x = x + math.sin(age / (p.kind == "z" and 300 or 180)) * s
-				c:opacity(k < 0.7 and 1 or (1 - k) / 0.3)
+				c:opacity(base * (k < 0.7 and 1 or (1 - k) / 0.3))
 				draw_glyph(c, g, math.floor(x), math.floor(y - g.h * q), q)
 			else -- dust
 				local size = math.floor((2 + k * 3) * q)
-				c:opacity(0.75 * (1 - k))
+				c:opacity(base * 0.75 * (1 - k))
 				c:rect(math.floor(x - size / 2), math.floor(y - size), size, size, "#d6cdbf", q)
 			end
 		end
 	end
-	c:opacity(1)
+	c:opacity(base)
 end
 
-local function draw_bubble(c, w, h, box)
-	local text = cat.bubble
-	local tw = c:measure(text, BUBBLE_FONT)
-	cat.bubble_w = tw
-	local bx, by, bw, bh, lines = bubble_rect(tw)
-	-- To the canvas; the box stays as it was while the cat is carried.
-	bx = math.max(0, math.min(bx - box[1], w - bw))
-	by = math.max(0, by - box[2])
-	if bw > w or by + bh + 6 > h then
-		return
+-- A rectangle from the window into the canvas, kept inside it; nil if it
+-- does not fit (the overlay is held as it was while the cat is carried).
+local function to_canvas(rect, box, w, h, below)
+	local x = math.max(0, math.min(rect[1] - box[1], w - rect[3]))
+	local y = math.max(0, rect[2] - box[2])
+	if rect[3] > w or y + rect[4] + (below or 0) > h then
+		return nil
 	end
-	local cx = head_anchor(cat.pose)
-	local tip = math.floor(cat.x) - box[1] + cx * scale()
-	tip = math.max(bx + 9, math.min(tip, bx + bw - 9))
-	c:polygon({ tip - 5, by + bh - 1, tip + 5, by + bh - 1, tip, by + bh + 6 }, "windowSubTextFg")
-	c:rect(bx, by, bw, bh, "windowBg", 9)
-	c:stroke(bx, by, bw, bh, "windowSubTextFg", 1, 9)
-	c:polygon({ tip - 4, by + bh - 1.5, tip + 4, by + bh - 1.5, tip, by + bh + 4.5 }, "windowBg")
-	c:text(bx + 8, by + 3, text, {
-		size = BUBBLE_FONT.size,
-		bold = true,
-		color = "windowFg",
-		width = bw - 16,
-		height = lines * 15,
-		align = "center",
-	})
+	return x, y
 end
 
-local function draw_ball(c, ox, oy, s)
+local function draw_labels(c, w, h, box, base)
+	local name = tag_text()
+	if name then
+		cat.tag_w = c:measure(name, TAG_FONT)
+		cat.tag_text = name
+	end
+	if cat.bubble then
+		cat.bubble_w = c:measure(cat.bubble, BUBBLE_FONT)
+	end
+	local tag, bubble = labels(name and cat.tag_w or nil, cat.bubble and cat.bubble_w or nil)
+	if tag then
+		local x, y = to_canvas(tag, box, w, h)
+		if x then
+			c:opacity(base * 0.9)
+			c:rect(x, y, tag[3], tag[4], "windowBg", 7)
+			c:opacity(base)
+			c:stroke(x, y, tag[3], tag[4], "windowSubTextFg", 1, 7)
+			c:text(x + 6, y + 1, name, {
+				size = TAG_FONT.size,
+				bold = true,
+				color = "windowFg",
+				width = tag[3] - 12,
+				height = 13,
+				align = "center",
+			})
+		end
+	end
+	if bubble then
+		local x, y = to_canvas(bubble, box, w, h, 6)
+		if x then
+			c:opacity(1) -- what the cat says stays readable
+			local cx = head_anchor(cat.pose)
+			local tip = math.floor(cat.x) - box[1] + cx * scale()
+			tip = math.max(x + 9, math.min(tip, x + bubble[3] - 9))
+			local bottom = y + bubble[4]
+			c:polygon({ tip - 5, bottom - 1, tip + 5, bottom - 1, tip, bottom + 6 }, "windowSubTextFg")
+			c:rect(x, y, bubble[3], bubble[4], "windowBg", 9)
+			c:stroke(x, y, bubble[3], bubble[4], "windowSubTextFg", 1, 9)
+			c:polygon({ tip - 4, bottom - 1.5, tip + 4, bottom - 1.5, tip, bottom + 4.5 }, "windowBg")
+			c:text(x + 8, y + 3, cat.bubble, {
+				size = BUBBLE_FONT.size,
+				bold = true,
+				color = "windowFg",
+				width = bubble[3] - 16,
+				height = bubble[5] * 15,
+				align = "center",
+			})
+		end
+	end
+end
+
+local function draw_ball(c, ox, oy, s, base)
 	local ball = cat.ball
 	if not ball then
 		return
@@ -1396,17 +1743,16 @@ local function draw_ball(c, ox, oy, s)
 	local g = (math.floor(ball.spin / (3 * s)) % 2 == 0) and GLYPHS.ball1 or GLYPHS.ball2
 	local x = math.floor(ox + (ball.x - math.floor(cat.x)) - g.w * s / 2)
 	local y = oy + (H - g.h) * s
-	if ball.fade then
-		c:opacity(math.max(0, 1 - (tg.now() - ball.fade) / 900))
-	end
+	local fade = ball.fade and math.max(0, 1 - (tg.now() - ball.fade) / 900) or 1
+	c:opacity(base * fade)
 	-- A loose end of the yarn on the floor, behind the ball.
 	local tail_x = (ball.vx >= 0) and (x - 3 * s) or (x + g.w * s)
 	c:rect(tail_x, y + (g.h - 2) * s, 3 * s, s, "#b8364f")
 	draw_glyph(c, g, x, y, s)
-	c:opacity(1)
+	c:opacity(base)
 end
 
-local function draw_shadow(c, f, x, y, s, dir)
+local function draw_shadow(c, f, x, y, s, dir, base)
 	if not f.feet then
 		return
 	end
@@ -1415,9 +1761,9 @@ local function draw_shadow(c, f, x, y, s, dir)
 		l, r = W - 1 - r, W - 1 - l
 	end
 	l, r = math.max(0, l - 1), math.min(W, r + 2)
-	c:opacity(0.22)
+	c:opacity(0.22 * base)
 	c:rect(x + l * s, y + (H - 1) * s + s / 2, (r - l) * s, s * 1.4, "#000000", s * 0.7)
-	c:opacity(1)
+	c:opacity(base)
 end
 
 local function paint(c)
@@ -1427,28 +1773,29 @@ local function paint(c)
 		return
 	end
 	local s = scale()
+	local base = opacity()
 	local now = tg.now()
 	local ox = math.floor(cat.x) - box[1]
 	local oy = math.floor(cat.y) - box[2]
+	c:opacity(base)
 	local shift
 	if cat.mode == "carried" then
 		shift = {}
 		for row = 0, H - 1 do
 			shift[row] = math.floor(cat.lean * math.max(0, row - 3) / (H - 4) + 0.5)
 		end
-	else
-		draw_shadow(c, frame(cat.pose), ox, oy, s, cat.dir)
+	elseif cat.mode ~= "fall" and flag("shadow") then
+		draw_shadow(c, frame(cat.pose), ox, oy, s, cat.dir, base)
 	end
 	local purr = (cat.mode == "happy" and (now // 70) % 2 == 0) and 1 or 0
-	draw_frame(c, cat.pose, coat_index(), ox + purr, oy, s, cat.dir, shift)
-	if cat.mode == "carried" and cat.drag and now - cat.drag.started < 1500 then
+	draw_frame(c, cat.pose, coat_key(), ox + purr, oy, s, cat.dir, shift)
+	if cat.mode == "carried" and cat.drag and now - cat.drag.started < 1500 and flag("effects") then
 		draw_glyph(c, GLYPHS.bang, ox + 23 * s, oy + 2 * s, math.max(1, s - 1))
 	end
-	draw_ball(c, ox, oy, s)
-	draw_fx(c, ox, oy, s, now)
-	if cat.bubble then
-		draw_bubble(c, w, h, box)
-	end
+	draw_ball(c, ox, oy, s, base)
+	draw_fx(c, ox, oy, s, now, base)
+	draw_labels(c, w, h, box, base)
+	c:opacity(1)
 end
 
 ------------------------------------------------------------- overlay
@@ -1469,7 +1816,6 @@ end
 -- top-left is; the cat keeps its place inside the overlay.
 local function drag_start(x, y)
 	local now = tg.now()
-	-- The cat keeps its place inside the overlay.
 	local box = cat.box
 	cat.drag = {
 		dx = cat.x - (box and box[1] or x),
@@ -1514,21 +1860,23 @@ local function drag_drop(x, y)
 	drag_move(x, y)
 	cat.drag = nil
 	cat.lean, cat.swing = 0, 0
+	local where = home()
+	if where == HOME_FLOOR and cat.y < floor_y() - 1 then
+		start_fall()
+		return
+	end
+	if where == HOME_SPOT then
+		remember_spot(cat.x, cat.y)
+	end
 	begin("land", 900)
 	cat.pose = "land"
-	-- Dust puffs at both sides of the paws.
-	for i = 0, 2 do
-		spawn("dust", 8 - i * 2, 23, -0.005, -0.002, 420 + i * 90)
-		spawn("dust", 25 + i * 2, 23, 0.005, -0.002, 420 + i * 90)
-	end
-	if math.random() < 0.6 then
-		say(pick(plugin.t("say.land1"), plugin.t("say.land2"), plugin.t("say.land3")), 1500)
-	end
+	dust()
+	say(pick(plugin.t("say.land1"), plugin.t("say.land2"), plugin.t("say.land3")), 1500, 0.6)
 end
 
 local function open_overlay()
 	local x, y, w, h = layout()
-	local interactive = setting("pettable", true)
+	local interactive = setting("pettable", true) ~= false
 	cat.box = { x, y, w, h }
 	-- draggable and on_drag* are new: older clients skip them and only
 	-- take the click.
@@ -1550,11 +1898,11 @@ local function open_overlay()
 end
 
 local function frame_loop()
-	if not setting("enabled", true) then
+	if not flag("enabled") then
 		close_overlay()
 		return
 	end
-	if overlay and overlay_interactive ~= setting("pettable", true) then
+	if overlay and overlay_interactive ~= (setting("pettable", true) ~= false) then
 		close_overlay()
 	end
 	tick()
@@ -1590,17 +1938,20 @@ cat.blink_at = last_tick + 2000
 loop()
 
 local function call_cat()
-	if not setting("enabled", true) then
+	if not flag("enabled") then
 		plugin.settings.set("enabled", true)
 		plugin.settings.refresh()
 	end
 	local ww, wh = tg.ui.window_size()
-	if not ww or cat.mode == "carried" then
+	if not ww or cat.mode == "carried" or cat.mode == "fall" then
 		return
 	end
 	local sw, sh = sprite_size()
 	cat.tx = math.floor((ww - sw) / 2)
-	cat.ty = math.floor((wh - sh) / 2)
+	cat.ty = math.floor((wh - sh) / (home() == HOME_FLOOR and 1 or 2))
+	if home() == HOME_SPOT then
+		remember_spot(cat.tx, cat.ty) -- it lives here now
+	end
 	cat.ball = nil
 	cat.fx = {}
 	begin("run")
@@ -1608,7 +1959,7 @@ local function call_cat()
 	say(pick(plugin.t("say.coming1"), plugin.t("say.coming2")), 1400)
 end
 
--------------------------------------------------------------- settings
+-------------------------------------------------------------- the page
 
 -- The preview shows three poses; a click shows the next three.
 local PREVIEW = {
@@ -1618,25 +1969,60 @@ local PREVIEW = {
 	{ "run1", "wipe", "sleep2" },
 }
 local preview_set = 1
+local PREVIEW_HEIGHT = 112
 
 local function paint_preview(c)
 	local w, h = c:size()
-	local coat = coat_index()
+	local key = coat_key()
+	local base = opacity()
 	local s = (w >= 3 * W * 3 + 40) and 3 or 2
 	local gap = 12
 	local ox = (w - (3 * W * s + 2 * gap)) / 2
-	local oy = math.floor((h - (H + 1) * s) / 2)
-	for i, name in ipairs(PREVIEW[preview_set]) do
+	local oy = math.floor(h - (H + 1) * s - 4)
+	local name = tag_text()
+	for i, pose in ipairs(PREVIEW[preview_set]) do
 		local x = math.floor(ox + (i - 1) * (W * s + gap))
-		if not name:match("^hang") then
-			draw_shadow(c, frame(name), x, oy, s, 1)
+		c:opacity(base)
+		if flag("shadow") and not pose:match("^hang") then
+			draw_shadow(c, frame(pose), x, oy, s, 1, base)
 		end
-		draw_frame(c, name, coat, x, oy, s, 1)
+		draw_frame(c, pose, key, x, oy, s, 1)
+		if name and i == 2 then
+			local f = frame(pose)
+			local tw = math.min(c:measure(name, TAG_FONT), W * s + gap * 2 - 12)
+			local tx = x + (f.head[1] + 0.5) * s - (tw + 12) / 2
+			local ty = math.max(0, oy + f.head[2] * s - 18)
+			c:opacity(base * 0.9)
+			c:rect(tx, ty, tw + 12, 15, "windowBg", 7)
+			c:opacity(base)
+			c:stroke(tx, ty, tw + 12, 15, "windowSubTextFg", 1, 7)
+			c:text(tx + 6, ty + 1, name, {
+				size = TAG_FONT.size,
+				bold = true,
+				color = "windowFg",
+				width = tw,
+				height = 13,
+				align = "center",
+			})
+		end
 	end
+	c:opacity(1)
+end
+
+local function refresh()
+	plugin.settings.refresh()
+end
+
+local function hours()
+	local list = {}
+	for hour = 0, 23 do
+		list[#list + 1] = string.format("%d:00", hour)
+	end
+	return list
 end
 
 local function settings_page()
-	return {
+	local rows = {
 		{ type = "header", text = plugin.t("settings.cat") },
 		{
 			type = "switch",
@@ -1651,7 +2037,26 @@ local function settings_page()
 			text = plugin.t("settings.name"),
 			placeholder = plugin.t("settings.name.placeholder"),
 			icon = "edit",
+			on_change = refresh,
 		},
+		{
+			type = "switch",
+			key = "pettable",
+			text = plugin.t("settings.interact"),
+			subtext = plugin.t("settings.interact.about"),
+			icon = "like",
+			default = true,
+			on_change = close_overlay,
+		},
+		{
+			type = "text",
+			text = plugin.t("call"),
+			icon = "add_user",
+			accent = true,
+			on_click = call_cat,
+		},
+
+		{ type = "header", text = plugin.t("settings.appearance") },
 		{
 			type = "selector",
 			key = "coat",
@@ -1665,67 +2070,211 @@ local function settings_page()
 				plugin.t("coat.tabby"),
 				plugin.t("coat.tuxedo"),
 				plugin.t("coat.calico"),
+				plugin.t("coat.custom"),
 			},
 			default = 1,
 			icon = "palette",
-			on_change = function()
-				plugin.settings.refresh()
-			end,
-		},
-		{
-			type = "slider",
-			key = "size",
-			text = plugin.t("settings.size"),
-			min = 2,
-			max = 5,
-			step = 1,
-			default = 3,
-		},
-		{
-			type = "slider",
-			key = "speed",
-			text = plugin.t("settings.speed"),
-			min = 1,
-			max = 5,
-			step = 1,
-			default = 2,
-		},
-		{
-			type = "custom",
-			height = 96,
-			paint = paint_preview,
-			on_click = function()
-				preview_set = preview_set % #PREVIEW + 1
-				plugin.settings.refresh()
-			end,
-		},
-		{ type = "divider", text = plugin.t("settings.preview.about") },
-		{ type = "header", text = plugin.t("settings.character") },
-		{
-			type = "switch",
-			key = "pettable",
-			text = plugin.t("settings.interact"),
-			subtext = plugin.t("settings.interact.about"),
-			icon = "like",
-			default = true,
-			on_change = close_overlay,
-		},
-		{
-			type = "switch",
-			key = "night",
-			text = plugin.t("settings.night"),
-			subtext = plugin.t("settings.night.about"),
-			icon = "night",
-			default = true,
-		},
-		{
-			type = "text",
-			text = plugin.t("call"),
-			icon = "add_user",
-			accent = true,
-			on_click = call_cat,
+			on_change = refresh,
 		},
 	}
+	local function add(row)
+		rows[#rows + 1] = row
+	end
+	if choice("coat", 1, CUSTOM) == CUSTOM then
+		add{
+			type = "selector",
+			key = "fur",
+			text = plugin.t("settings.fur"),
+			items = {
+				plugin.t("fur.black"),
+				plugin.t("fur.smoky"),
+				plugin.t("fur.grey"),
+				plugin.t("fur.blue"),
+				plugin.t("fur.lilac"),
+				plugin.t("fur.white"),
+				plugin.t("fur.cream"),
+				plugin.t("fur.fawn"),
+				plugin.t("fur.golden"),
+				plugin.t("fur.ginger"),
+				plugin.t("fur.brown"),
+				plugin.t("fur.chocolate"),
+			},
+			default = 10,
+			icon = "draw",
+			on_change = refresh,
+		}
+		add{
+			type = "selector",
+			key = "pattern",
+			text = plugin.t("settings.pattern"),
+			items = {
+				plugin.t("pattern.none"),
+				plugin.t("pattern.stripes"),
+				plugin.t("pattern.patches"),
+				plugin.t("pattern.tuxedo"),
+				plugin.t("pattern.points"),
+			},
+			default = PATTERN_STRIPES,
+			icon = "customize",
+			on_change = refresh,
+		}
+		add{
+			type = "selector",
+			key = "eyes",
+			text = plugin.t("settings.eyes"),
+			items = {
+				plugin.t("eyes.dark"),
+				plugin.t("eyes.green"),
+				plugin.t("eyes.hazel"),
+				plugin.t("eyes.amber"),
+				plugin.t("eyes.copper"),
+				plugin.t("eyes.blue"),
+			},
+			default = 2,
+			icon = "eye",
+			on_change = refresh,
+		}
+	end
+	add{
+		type = "slider",
+		key = "size",
+		text = plugin.t("settings.size"),
+		min = 1,
+		max = 6,
+		step = 1,
+		default = 3,
+	}
+	add{
+		type = "slider",
+		key = "opacity",
+		text = plugin.t("settings.opacity"),
+		min = 40,
+		max = 100,
+		step = 10,
+		default = 100,
+		on_change = refresh,
+	}
+	add{
+		type = "switch",
+		key = "shadow",
+		text = plugin.t("settings.shadow"),
+		default = true,
+		on_change = refresh,
+	}
+	add{
+		type = "switch",
+		key = "name_tag",
+		text = plugin.t("settings.name_tag"),
+		subtext = plugin.t("settings.name_tag.about"),
+		default = false,
+		on_change = refresh,
+	}
+	add{
+		type = "custom",
+		height = PREVIEW_HEIGHT,
+		paint = paint_preview,
+		on_click = function()
+			preview_set = preview_set % #PREVIEW + 1
+			refresh()
+		end,
+	}
+	add{ type = "divider", text = plugin.t("settings.preview.about") }
+
+	add{ type = "header", text = plugin.t("settings.behaviour") }
+	add{
+		type = "slider",
+		key = "speed",
+		text = plugin.t("settings.speed"),
+		min = 1,
+		max = 5,
+		step = 1,
+		default = 2,
+	}
+	add{
+		type = "selector",
+		key = "activity",
+		text = plugin.t("settings.activity"),
+		items = {
+			plugin.t("activity.lazy"),
+			plugin.t("activity.calm"),
+			plugin.t("activity.normal"),
+			plugin.t("activity.playful"),
+			plugin.t("activity.restless"),
+		},
+		default = 3,
+		icon = "timer",
+	}
+	add{
+		type = "selector",
+		key = "talk",
+		text = plugin.t("settings.talk"),
+		items = {
+			plugin.t("talk.silent"),
+			plugin.t("talk.quiet"),
+			plugin.t("talk.normal"),
+			plugin.t("talk.chatty"),
+		},
+		default = 3,
+		icon = "chat",
+	}
+	add{
+		type = "switch",
+		key = "yarn",
+		text = plugin.t("settings.yarn"),
+		icon = "star",
+		default = true,
+	}
+	add{
+		type = "switch",
+		key = "effects",
+		text = plugin.t("settings.effects"),
+		subtext = plugin.t("settings.effects.about"),
+		icon = "like",
+		default = true,
+	}
+	add{
+		type = "switch",
+		key = "night",
+		text = plugin.t("settings.night"),
+		subtext = plugin.t("settings.night.about"),
+		icon = "night",
+		default = true,
+		on_change = refresh,
+	}
+	if flag("night") then
+		add{
+			type = "selector",
+			key = "night_from",
+			text = plugin.t("settings.night_from"),
+			items = hours(),
+			default = 24,
+			icon = "schedule",
+		}
+		add{
+			type = "selector",
+			key = "night_to",
+			text = plugin.t("settings.night_to"),
+			items = hours(),
+			default = 8,
+			icon = "schedule",
+		}
+	end
+
+	add{ type = "header", text = plugin.t("settings.home") }
+	add{
+		type = "selector",
+		key = "home",
+		text = plugin.t("settings.home.where"),
+		items = {
+			plugin.t("home.anywhere"),
+			plugin.t("home.floor"),
+			plugin.t("home.spot"),
+		},
+		default = HOME_ANYWHERE,
+		icon = "location",
+	}
+	add{ type = "divider", text = plugin.t("settings.home.about") }
+	return rows
 end
 
 plugin.settings.page(settings_page)

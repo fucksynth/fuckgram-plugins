@@ -1,13 +1,13 @@
 {
     "id": "fuckgram.pixel_cat",
     "name": "Pixel Cat",
-    "version": "1.2",
+    "version": "1.3",
     "author": "fuckgram",
-    "description": "A pixel cat lives in the client window: it walks, sits, washes, stretches, naps and chases a ball of yarn. Click it to pet it, drag it to carry it around. The coat, size, speed and name are in the plugin settings.",
+    "description": "A pixel cat lives in the client window: it walks, sits, washes, stretches, naps and chases a ball of yarn. Click it to pet it, drag it to carry it around. Coat (or your own), size, opacity, character and where it lives are in the plugin settings.",
     "localized": {
         "ru": {
             "name": "Пиксельный котик",
-            "description": "В окне клиента живёт пиксельный котик: гуляет, сидит, умывается, потягивается, спит и гоняет клубок. Щелчок — погладить, перетаскивание — понести. Окрас, размер, скорость и имя — в настройках плагина."
+            "description": "В окне клиента живёт пиксельный котик: гуляет, сидит, умывается, потягивается, спит и гоняет клубок. Щелчок — погладить, перетаскивание — понести. Окрас (или свой), размер, видимость, характер и где котик живёт — в настройках плагина."
         }
     },
     "api": { "min": 1, "max": 1 },
