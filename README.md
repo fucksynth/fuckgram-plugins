@@ -21,8 +21,10 @@ The workflow "Publish plugins" does the rest:
 1. packs the plugins whose sources changed (`tools/build.py`) and updates
    `index.json` — the catalog shows the new version within minutes;
 2. posts a new plugin to the channel, or replaces the file and the caption
-   in the post of an updated one and sends a short "updated" message —
-   the channel never keeps old versions (`tools/telegram.py`);
+   in the post of an updated one and sends a short "updated: id 1.1 -> 1.2"
+   message — the channel never keeps old versions (`tools/telegram.py`).
+   Posts are in English and technical only: name, id, version, api,
+   permissions, categories, languages, size, SHA-256;
 3. commits `dist/`, `index.json` and `channel.json` back (pull before your
    next push).
 
@@ -43,6 +45,7 @@ workflow log says which).
 Выпуск: поменять исходники и `version`, запушить в `main`. Action «Publish
 plugins» соберёт пакеты, обновит `index.json` (каталог увидит новую версию
 через пару минут), выложит новый плагин в канал или заменит файл и подпись
-в посте обновлённого и напишет короткое «обновлён» — старых версий в канале
-не остаётся. Нужен секрет `TELEGRAM_BOT_TOKEN`: бот — админ канала с правом
+в посте обновлённого и напишет короткое «updated: id 1.1 -> 1.2» — старых
+версий в канале не остаётся. Посты только на английском и только с
+техническими данными (id, версия, права, размер, SHA-256). Нужен секрет `TELEGRAM_BOT_TOKEN`: бот — админ канала с правом
 публиковать, редактировать и удалять сообщения.

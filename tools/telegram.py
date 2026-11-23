@@ -77,21 +77,38 @@ def manifest_of(path):
         return json.loads(archive.read("manifest.json").decode("utf-8"))
 
 
-def texts(manifest):
-    # The channel speaks Russian: the Russian texts, if the plugin has them.
-    localized = manifest.get("localized", {}).get("ru", {})
-    name = localized.get("name") or manifest.get("name", "")
-    description = localized.get("description") or manifest.get("description", "")
-    return name, description
+def name_of(manifest):
+    # The channel is English only: the default (English) name.
+    return manifest.get("name", "") or manifest.get("id", "")
 
 
-def caption(manifest):
-    name, description = texts(manifest)
-    head = f"<b>{html.escape(name)}</b> {html.escape(manifest.get('version', ''))}"
-    tail = f"\n\n#{manifest['id'].split('.')[-1].replace('-', '_')}"
-    room = CAPTION_LIMIT - len(head) - len(tail) - 2
-    text = description if len(description) <= room else description[:room - 1] + "…"
-    return f"{head}\n\n{html.escape(text)}{tail}"
+def size_text(size):
+    if size < 1024:
+        return f"{size} B"
+    return f"{size / 1024:.1f} KB"
+
+
+def caption(manifest, entry):
+    # Technical values only, in English.
+    api = manifest.get("api", {})
+    api_min = api.get("min", 1)
+    api_max = api.get("max", api_min)
+    rows = [
+        ("id", manifest.get("id", "")),
+        ("version", manifest.get("version", "")),
+        ("api", f"{api_min}" if api_min == api_max else f"{api_min}-{api_max}"),
+        ("permissions", ", ".join(manifest.get("permissions", [])) or "none"),
+        ("categories", ", ".join(manifest.get("categories", [])) or "none"),
+        ("languages", ", ".join(sorted(
+            {"en"} | set(manifest.get("localized", {}).keys())))),
+        ("size", size_text(entry["size"])),
+        ("sha256", entry["sha256"]),
+    ]
+    lines = [f"<b>{html.escape(name_of(manifest))}</b>", ""]
+    for key, value in rows:
+        lines.append(f"{key}: <code>{html.escape(str(value))}</code>")
+    text = "\n".join(lines)
+    return text[:CAPTION_LIMIT]
 
 
 def file_name(plugin_id):
@@ -145,7 +162,7 @@ def main():
         with open(path, "rb") as f:
             data = f.read()
         document = (file_name(plugin_id), data)
-        text = caption(manifest)
+        text = caption(manifest, entry)
         try:
             message_id = None
             if post and post.get("message_id"):
@@ -185,15 +202,15 @@ def main():
             }
             save()
             if updated and notify and previous != entry.get("version"):
-                name, _ = texts(manifest)
                 link = post_link(chat, message_id)
-                title = f"<b>{html.escape(name)}</b>"
+                title = f"<code>{html.escape(plugin_id)}</code>"
                 if link:
                     title = f"<a href=\"{link}\">{title}</a>"
+                versions = html.escape(
+                    f"{previous or '?'} -> {entry.get('version', '')}")
                 bot.call("sendMessage", {
                     "chat_id": chat,
-                    "text": f"\U0001F504 {title} обновлён до версии "
-                            f"{html.escape(entry.get('version', ''))}",
+                    "text": f"updated: {title} {versions}",
                     "parse_mode": "HTML",
                     "link_preview_options": {"is_disabled": True},
                 })
