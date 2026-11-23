@@ -118,7 +118,14 @@ def check_bot(bot, chat):
             "user_id": str(me["id"]),
         })
     except Exception as error:
-        annotate("error", f"{name} in {chat}: {error}")
+        if "inaccessible" in str(error):
+            # Only admins of a channel see who is in it.
+            annotate("error", f"{name} is not an admin of {chat}: add it to "
+                              f"the channel admins with \"Post messages\", "
+                              f"\"Edit messages of others\" and \"Delete "
+                              f"messages of others\".")
+        else:
+            annotate("error", f"{name} in {chat}: {error}")
         return False
     status = member.get("status")
     if status not in ("administrator", "creator"):
