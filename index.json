@@ -2,21 +2,21 @@
   "format": 1,
   "plugins": [
     {
+      "id": "fuckgram.pixel_cat",
+      "version": "1.2",
+      "file": "dist/fuckgram.pixel_cat.flua",
+      "size": 28710,
+      "sha256": "f9ab9b87a16e6531705c4b345721bc4073a3ebb1528c81462cf75752e4389044",
+      "sources": "b0419da8e49a4c08d215b5d4a4e8e3bf8d562fba8ffcf10da083ca67fb6c0068",
+      "date": 1795454466
+    },
+    {
       "id": "fuckgram.material_player",
       "version": "1.1",
       "file": "dist/fuckgram.material_player.flua",
       "size": 19423,
       "sha256": "a4dbee3393be659967cd11bf3dff49512f5593dc2dd28f096d5bd992be19bae3",
       "sources": "5181e23b3d5ef2891b51b245b74433a0667dcf2488c5df9e5d11fcf1f8368afd",
-      "date": 1795442964
-    },
-    {
-      "id": "fuckgram.pixel_cat",
-      "version": "1.1",
-      "file": "dist/fuckgram.pixel_cat.flua",
-      "size": 20132,
-      "sha256": "07aa6960dd21675f710f3b7f6cfda27bca78416efa73d155f516f43437054880",
-      "sources": "fed0d0037d8f278aa47f69608794a6edf5df256a62de545e7711054833be0c94",
       "date": 1795442964
     },
     {
