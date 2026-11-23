@@ -5,9 +5,10 @@ name: Publish plugins
 # Telegram channel gets the new and the updated plugins (one post per
 # plugin, edited in place). The results are committed back here.
 #
-# Telegram needs the repository secret TELEGRAM_BOT_TOKEN: a bot that is an
-# admin of the channel allowed to post, edit and delete messages. Without
-# it only the repository is updated. Variables (optional): TELEGRAM_CHAT
+# Telegram needs the repository variable TELEGRAM_POSTING = on and the
+# secret TELEGRAM_BOT_TOKEN: a bot that is an admin of the channel allowed
+# to post, edit and delete messages. Without them only the repository is
+# updated. Variables (optional): TELEGRAM_CHAT
 # (default @fuckgramplugins), TELEGRAM_NOTIFY ("no": no text message about
 # an update).
 
@@ -40,7 +41,10 @@ jobs:
       - name: Build the packages.
         run: python tools/build.py
 
+      # Off until the repository variable TELEGRAM_POSTING is "on": the
+      # plugins here may need a client that is not released yet.
       - name: Post to Telegram.
+        if: vars.TELEGRAM_POSTING == 'on'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT: ${{ vars.TELEGRAM_CHAT }}

@@ -28,7 +28,8 @@ The workflow "Publish plugins" does the rest:
 3. commits `dist/`, `index.json` and `channel.json` back (pull before your
    next push).
 
-Telegram needs the repository secret `TELEGRAM_BOT_TOKEN`: a bot that is an
+Telegram needs the repository variable `TELEGRAM_POSTING` = `on` (posting
+is off without it) and the secret `TELEGRAM_BOT_TOKEN`: a bot that is an
 admin of the channel allowed to post, edit and delete messages. Optional
 variables: `TELEGRAM_CHAT` (default `@fuckgramplugins`), `TELEGRAM_NOTIFY`
 (`no` — no "updated" messages). A bot may delete only messages younger
@@ -47,5 +48,6 @@ plugins» соберёт пакеты, обновит `index.json` (катало
 через пару минут), выложит новый плагин в канал или заменит файл и подпись
 в посте обновлённого и напишет короткое «updated: id 1.1 -> 1.2» — старых
 версий в канале не остаётся. Посты только на английском и только с
-техническими данными (id, версия, права, размер, SHA-256). Нужен секрет `TELEGRAM_BOT_TOKEN`: бот — админ канала с правом
+техническими данными (id, версия, права, размер, SHA-256). Нужны переменная репозитория `TELEGRAM_POSTING` = `on` (без неё в канал
+ничего не уходит) и секрет `TELEGRAM_BOT_TOKEN`: бот — админ канала с правом
 публиковать, редактировать и удалять сообщения.
