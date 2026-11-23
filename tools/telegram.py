@@ -23,6 +23,7 @@ import argparse
 import html
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -62,13 +63,20 @@ class Bot:
             self.url + method,
             data=b"".join(parts),
             headers={"Content-Type": f"multipart/form-data; boundary={boundary}"})
+        status = 200
         try:
             with urllib.request.urlopen(request, timeout=60) as response:
-                answer = json.loads(response.read().decode("utf-8"))
+                body = response.read().decode("utf-8", "replace")
         except urllib.error.HTTPError as error:
-            answer = json.loads(error.read().decode("utf-8") or "{}")
+            status = error.code
+            body = error.read().decode("utf-8", "replace")
+        try:
+            answer = json.loads(body or "{}")
+        except ValueError:
+            answer = {}
         if not answer.get("ok"):
-            raise TelegramError(answer.get("description", "unknown error"))
+            description = answer.get("description") or body[:200] or "no answer"
+            raise TelegramError(f"HTTP {status}: {description}")
         return answer.get("result")
 
 
@@ -177,7 +185,20 @@ def main():
     parser.add_argument("--all", action="store_true", help="every plugin again")
     args = parser.parse_args()
 
-    token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    # Pasted tokens often bring spaces, line breaks or a "bot" prefix.
+    raw = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    token = re.sub(r"\s+", "", raw)
+    if token.lower().startswith("bot") and ":" in token:
+        token = token[3:]
+    if token and token != raw:
+        annotate("warning", "TELEGRAM_BOT_TOKEN had spaces, line breaks or "
+                            "a \"bot\" prefix: they are dropped. Better fix "
+                            "the secret.")
+    if token and not re.fullmatch(r"\d{5,}:[A-Za-z0-9_-]{30,}", token):
+        annotate("error", "TELEGRAM_BOT_TOKEN does not look like a bot token "
+                          "(digits, a colon, then 35 letters, as @BotFather "
+                          f"gives it); it has {len(token)} characters.")
+        sys.exit(1)
     chat = os.environ.get("TELEGRAM_CHAT", "") or "@fuckgramplugins"
     notify = os.environ.get("TELEGRAM_NOTIFY", "yes").lower() not in ("no", "0", "false")
     if not token:
