@@ -72,6 +72,57 @@ class Bot:
         return answer.get("result")
 
 
+def annotate(level, message):
+    # GitHub shows these on the run page, also to those who can not read
+    # the log. Telegram errors never contain the token.
+    message = str(message).replace("\n", " ")
+    print(f"::{level}::{message}", flush=True)
+
+
+def check_bot(bot, chat):
+    """The bot exists, sees the channel and may post, edit and delete."""
+    try:
+        me = bot.call("getMe", {})
+    except Exception as error:
+        annotate("error", f"TELEGRAM_BOT_TOKEN does not work: {error}")
+        return False
+    name = "@" + me.get("username", "?")
+    try:
+        info = bot.call("getChat", {"chat_id": chat})
+    except Exception as error:
+        annotate("error", f"{name} can not see {chat}: {error}. Add the bot "
+                          f"to the channel as an admin (or check TELEGRAM_CHAT).")
+        return False
+    try:
+        member = bot.call("getChatMember", {
+            "chat_id": chat,
+            "user_id": str(me["id"]),
+        })
+    except Exception as error:
+        annotate("error", f"{name} in {chat}: {error}")
+        return False
+    status = member.get("status")
+    if status not in ("administrator", "creator"):
+        annotate("error", f"{name} is '{status}' in {chat} "
+                          f"({info.get('type')}), it must be an admin.")
+        return False
+    missing = [right for right in (
+        "can_post_messages",
+        "can_edit_messages",
+        "can_delete_messages",
+    ) if not member.get(right)]
+    if "can_post_messages" in missing:
+        annotate("error", f"{name} is an admin of {chat} without "
+                          f"\"Post messages\".")
+        return False
+    if missing:
+        annotate("warning", f"{name} in {chat} has no "
+                            f"{', '.join(missing)}: updates of old posts "
+                            f"or removals may fail.")
+    print(f"{name} is an admin of {chat}: ok")
+    return True
+
+
 def manifest_of(path):
     with zipfile.ZipFile(path) as archive:
         return json.loads(archive.read("manifest.json").decode("utf-8"))
@@ -133,6 +184,8 @@ def main():
         print("TELEGRAM_BOT_TOKEN is not set: nothing is posted.")
         return
     bot = Bot(token)
+    if not check_bot(bot, chat):
+        sys.exit(1)
 
     with open(INDEX, encoding="utf-8") as f:
         index = {e["id"]: e for e in json.load(f).get("plugins", [])}
@@ -184,7 +237,8 @@ def main():
                         message_id = post["message_id"]
                     else:
                         # Deleted by hand, or too old to find: a new post.
-                        print(f"could not edit {plugin_id}: {error}; posting anew")
+                        annotate("warning", f"could not edit the post of "
+                                            f"{plugin_id}: {error}; posting anew")
             updated = message_id is not None
             if not updated:
                 result = bot.call("sendDocument", {
@@ -216,7 +270,7 @@ def main():
                 })
         except Exception as error:  # one plugin does not stop the rest
             failed += 1
-            print(f"could not publish {plugin_id}: {error}", file=sys.stderr)
+            annotate("error", f"could not publish {plugin_id}: {error}")
 
     for plugin_id in sorted(set(posts) - set(index)):
         message_id = posts[plugin_id].get("message_id")
