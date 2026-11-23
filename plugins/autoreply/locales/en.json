@@ -1,0 +1,22 @@
+{
+    "title": "Auto-Reply",
+    "reply.default": "I'm away right now and will reply as soon as I can.",
+    "toast.on": "On. The answer: “{1}”",
+    "toast.off": "Off",
+    "settings.reply": "Answer",
+    "settings.enabled": "Answer while I'm away",
+    "settings.enabled.about": "People who write to you in private chats get the text below.",
+    "settings.text": "Text",
+    "settings.how_often": "How often",
+    "settings.repeat": "Minutes between answers",
+    "settings.repeat.about": {
+        "one": "One person gets the answer at most once in {1} minute.",
+        "other": "One person gets the answer at most once in {1} minutes."
+    },
+    "settings.quiet": "Minutes of silence",
+    "settings.quiet.about": "If you wrote to a chat yourself, it does not answer there for this long.",
+    "settings.commands": "Commands",
+    "settings.commands.switch": "/away and /back",
+    "settings.commands.about": "“/away text” turns it on with a new text, “/back” turns it off. The commands are not sent.",
+    "settings.who": "Bots, groups, channels and you yourself never get an answer."
+}

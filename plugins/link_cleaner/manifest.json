@@ -1,0 +1,18 @@
+{
+    "id": "fuckgram.link_cleaner",
+    "name": "Link Cleaner",
+    "version": "1.1",
+    "author": "fuckgram",
+    "description": "Removes tracking tags from links in your messages: utm_*, fbclid, gclid, yclid, si on YouTube and Spotify and others. The link opens the same, but the site does not learn where you got it.",
+    "localized": {
+        "ru": {
+            "name": "Чистые ссылки",
+            "description": "Убирает из ссылок в ваших сообщениях метки слежки: utm_*, fbclid, gclid, yclid, si у YouTube и Spotify и другие. Ссылка открывается так же, но сайт не узнает, откуда вы её взяли."
+        }
+    },
+    "api": { "min": 1, "max": 1 },
+    "entry": "init.lua",
+    "icon": "resources/icon.png",
+    "categories": ["privacy", "tools"],
+    "permissions": ["messages.send", "ui", "storage"]
+}

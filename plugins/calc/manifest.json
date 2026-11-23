@@ -1,0 +1,18 @@
+{
+    "id": "fuckgram.calc",
+    "name": "Calculator",
+    "version": "1.1",
+    "author": "fuckgram",
+    "description": "Calculates right in the message field: type “2+2*2=” or “/calc (15000-3200)*12” and “2+2*2 = 6” is sent. Brackets, powers, percent, sqrt, sin, cos, log, round, pi and e.",
+    "localized": {
+        "ru": {
+            "name": "Калькулятор",
+            "description": "Считает прямо в поле ввода: напишите «2+2*2=» или «/calc (15000-3200)*12» — уйдёт «2+2*2 = 6». Скобки, степени, проценты, sqrt, sin, cos, log, round, pi и e."
+        }
+    },
+    "api": { "min": 1, "max": 1 },
+    "entry": "init.lua",
+    "icon": "resources/icon.png",
+    "categories": ["tools"],
+    "permissions": ["messages.send", "ui", "storage"]
+}

@@ -1,0 +1,17 @@
+{
+    "title": "Калькулятор",
+    "error.parse": "Не понял выражение",
+    "settings.counting": "Счёт",
+    "settings.equals": "Считать по «=» в конце",
+    "settings.equals.about": "«2+2*2=» уходит как «2+2*2 = 6». /calc работает всегда.",
+    "settings.result_only": "Отправлять только ответ",
+    "settings.result_only.about": "«6» вместо «2+2*2 = 6».",
+    "settings.numbers": "Числа",
+    "settings.separator": "Дробная часть",
+    "settings.separator.auto": "Как в выражении",
+    "settings.separator.point": "Через точку: 2.5",
+    "settings.separator.comma": "Через запятую: 2,5",
+    "settings.digits": "Значащих цифр",
+    "settings.example": "Пример",
+    "settings.supported": "Понимает + − × ÷, скобки, степени (^), проценты, sqrt, sin, cos, tan, log, ln, abs, round, floor, ceil, pi и e."
+}

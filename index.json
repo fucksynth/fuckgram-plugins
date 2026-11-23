@@ -1,0 +1,77 @@
+{
+  "format": 1,
+  "plugins": [
+    {
+      "id": "fuckgram.material_player",
+      "version": "1.1",
+      "file": "dist/fuckgram.material_player.flua",
+      "size": 19423,
+      "sha256": "a4dbee3393be659967cd11bf3dff49512f5593dc2dd28f096d5bd992be19bae3",
+      "sources": "5181e23b3d5ef2891b51b245b74433a0667dcf2488c5df9e5d11fcf1f8368afd",
+      "date": 1795442964
+    },
+    {
+      "id": "fuckgram.pixel_cat",
+      "version": "1.1",
+      "file": "dist/fuckgram.pixel_cat.flua",
+      "size": 20132,
+      "sha256": "07aa6960dd21675f710f3b7f6cfda27bca78416efa73d155f516f43437054880",
+      "sources": "fed0d0037d8f278aa47f69608794a6edf5df256a62de545e7711054833be0c94",
+      "date": 1795442964
+    },
+    {
+      "id": "fuckgram.showcase",
+      "version": "1.1",
+      "file": "dist/fuckgram.showcase.flua",
+      "size": 22242,
+      "sha256": "6f4223c5f35ce9a56de641c9ba5f974fcad5856f7540ddd8552d0467390a4891",
+      "sources": "3ea97dce33d2dbdefff204d4f2f03a7474c5c2da4bd16546558950d51dfbad41",
+      "date": 1795442964
+    },
+    {
+      "id": "fuckgram.autoreply",
+      "version": "1.1",
+      "file": "dist/fuckgram.autoreply.flua",
+      "size": 11505,
+      "sha256": "49f3341fbb4098ec53a9d59cf793251532dfb55ad962cccdfdbda7c7cb00943e",
+      "sources": "1ed87bba50ced47737aad88f627efb8cdb8f67142424c592758596452fa439bd",
+      "date": 1795442963
+    },
+    {
+      "id": "fuckgram.calc",
+      "version": "1.1",
+      "file": "dist/fuckgram.calc.flua",
+      "size": 14414,
+      "sha256": "e50a735c7966b339b1ce28429fe7abcca0aec5d588d32cd12283fb71ee619364",
+      "sources": "868a2a7d57ce33099c554c44ed75e9bddbce5e07ce629c00c9414c6bcd57a05c",
+      "date": 1795442963
+    },
+    {
+      "id": "fuckgram.currency",
+      "version": "1.1",
+      "file": "dist/fuckgram.currency.flua",
+      "size": 17144,
+      "sha256": "6c089f3283162bfacb24b0ebdf1f28e529150c2669a05400332002db9aab3fd7",
+      "sources": "3869b8cc534da1680870b02cd9dc42c1e7360db9ae5ff1cb5ca1e1f28c803fd2",
+      "date": 1795442963
+    },
+    {
+      "id": "fuckgram.layout",
+      "version": "1.1",
+      "file": "dist/fuckgram.layout.flua",
+      "size": 10641,
+      "sha256": "2016a81dcdaee07c5c88c74bca917a7f18ddc6741022bf8d5fd1aa4a312abe96",
+      "sources": "b46e769cdb630be75693db6900101a8005ab69d8f086d4ea63600efd5be001f7",
+      "date": 1795442963
+    },
+    {
+      "id": "fuckgram.link_cleaner",
+      "version": "1.1",
+      "file": "dist/fuckgram.link_cleaner.flua",
+      "size": 13601,
+      "sha256": "34c8933f0af574ba59159f6f581dde88b3fc4cf8cde9e6f3ef741b6ff725bbe5",
+      "sources": "f94280908b787afb1da2a800c2437a91c21ff8d340db599d70432da3d6f6f22a",
+      "date": 1795442963
+    }
+  ]
+}

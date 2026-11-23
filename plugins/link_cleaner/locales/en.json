@@ -1,0 +1,24 @@
+{
+    "title": "Link Cleaner",
+    "toast.cleaned": {
+        "one": "{1} tracking tag removed",
+        "other": "{1} tracking tags removed"
+    },
+    "menu.copy": "Copy without tracking",
+    "toast.no_text": "This message has no text",
+    "toast.no_links": "This message has no links",
+    "toast.copied": {
+        "one": "Copied, {1} tracking tag removed",
+        "other": "Copied, {1} tracking tags removed"
+    },
+    "toast.copied_clean": "Copied: the links had no tracking tags",
+    "settings.header": "Cleaning",
+    "settings.notify": "Notify",
+    "settings.notify.about": "A short notice when tags are removed from a message you send.",
+    "settings.site_rules": "Tags of particular sites",
+    "settings.site_rules.about": "si on YouTube and Spotify, igsh on Instagram, spm on AliExpress and others. When off, only common tags like utm_* and fbclid are removed.",
+    "settings.extra": "Also remove",
+    "settings.extra.about": "Your own parameters, separated by commas.",
+    "settings.extra.placeholder": "ref, source",
+    "settings.kept": "Other parameters, such as the page number, a search or the time in a video, stay as they were."
+}

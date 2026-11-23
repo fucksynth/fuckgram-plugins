@@ -1,0 +1,18 @@
+{
+    "id": "fuckgram.autoreply",
+    "name": "Auto-Reply",
+    "version": "1.1",
+    "author": "fuckgram",
+    "description": "Answers private messages for you while you are away. Turn it on and set the text in the plugin settings or with “/away I'm away till Monday”, “/back” turns it off. Each person gets an answer at most every half an hour, bots and channels never.",
+    "localized": {
+        "ru": {
+            "name": "Автоответчик",
+            "description": "Отвечает за вас в личных сообщениях, пока вас нет. Включается и настраивается в настройках плагина или командой «/away Уехал до понедельника», «/back» выключает. Каждому собеседнику — не чаще раза в полчаса, ботам и каналам — никогда."
+        }
+    },
+    "api": { "min": 1, "max": 1 },
+    "entry": "init.lua",
+    "icon": "resources/icon.png",
+    "categories": ["chats"],
+    "permissions": ["messages.read", "messages.send", "chats.read", "ui", "storage"]
+}

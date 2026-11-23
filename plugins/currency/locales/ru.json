@@ -1,0 +1,21 @@
+{
+    "title": "Курсы валют",
+    "format.group": " ",
+    "format.decimal": ",",
+    "format.date": "{day}.{month}.{year}",
+    "reply": "{amount} {from} = {result} {to}",
+    "reply.date": "курс на {1}",
+    "error.usage": "Напишите, например, «/cur 100 usd rub»",
+    "error.service": "Сервис курсов не ответил ({1})",
+    "error.unknown": "Нет такой валюты: {1}",
+    "error.answer": "Непонятный ответ сервиса курсов",
+    "settings.conversion": "Перевод",
+    "settings.target": "Переводить в",
+    "settings.target.about": "Когда в команде одна валюта, например /cur 100 usd. Код вроде EUR; если пусто — RUB.",
+    "settings.target.placeholder": "RUB",
+    "settings.number_format": "Вид чисел",
+    "settings.number_format.auto": "Как в языке интерфейса",
+    "settings.show_date": "Дата курса",
+    "settings.show_date.about": "Добавляет строку с датой, на которую взят курс.",
+    "settings.usage": "Напишите в любом чате /cur 100 usd rub: команда не уйдёт, вместо неё плагин отправит ответ. Понимает коды (USD, EUR, CNY…), значки ($ € ₽ ¥ £ ₸ ₴) и названия (доллар, евро, юань…). Курсы обновляются раз в час."
+}

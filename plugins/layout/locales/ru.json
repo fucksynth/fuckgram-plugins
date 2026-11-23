@@ -1,0 +1,17 @@
+{
+    "title": "Раскладка",
+    "menu.field": "Исправить раскладку в поле ввода",
+    "menu.message": "Перевести раскладку",
+    "toast.empty_field": "Поле ввода пустое",
+    "toast.no_text": "В сообщении нет текста",
+    "toast.copied": "Скопировано в другой раскладке",
+    "dialog.copied": "В другой раскладке (скопировано)",
+    "settings.header": "Перевод",
+    "settings.keep_links": "Не трогать ссылки и @имена",
+    "settings.keep_links.about": "Их обычно вставляют, а не набирают.",
+    "settings.fix_command": "Команда /fix",
+    "settings.fix_command.about": "«/fix ghbdtn» уходит как «привет».",
+    "settings.show_result": "Показывать результат",
+    "settings.show_result.about": "Текст из меню сообщения всегда копируется, а с этим переключателем ещё и показывается в окне.",
+    "settings.where": "Поле ввода — в меню чата (⋮) → Плагины. Чужое сообщение — в его меню."
+}

@@ -1,0 +1,21 @@
+{
+    "title": "Exchange Rates",
+    "format.group": ",",
+    "format.decimal": ".",
+    "format.date": "{year}-{month}-{day}",
+    "reply": "{amount} {from} = {result} {to}",
+    "reply.date": "rate as of {1}",
+    "error.usage": "Type, for example, “/cur 100 usd rub”",
+    "error.service": "The rates service did not answer ({1})",
+    "error.unknown": "Unknown currency: {1}",
+    "error.answer": "The rates service sent an answer the plugin does not understand",
+    "settings.conversion": "Conversion",
+    "settings.target": "Convert to",
+    "settings.target.about": "When the command names one currency, like /cur 100 usd. A code such as EUR; RUB if empty.",
+    "settings.target.placeholder": "RUB",
+    "settings.number_format": "Numbers",
+    "settings.number_format.auto": "As in the interface language",
+    "settings.show_date": "Date of the rate",
+    "settings.show_date.about": "Adds a line with the date the rate was published.",
+    "settings.usage": "Type /cur 100 usd rub in any chat: the command is not sent, the result is. Codes (USD, EUR, CNY…), symbols ($ € ₽ ¥ £ ₸ ₴) and names (dollar, euro, yuan…) work. Rates are updated once an hour."
+}

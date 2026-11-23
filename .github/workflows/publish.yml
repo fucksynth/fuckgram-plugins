@@ -1,0 +1,69 @@
+name: Publish plugins
+
+# A push of plugin sources to "main": the packages are built (only what
+# changed), index.json is updated (the client's catalog reads it), and the
+# Telegram channel gets the new and the updated plugins (one post per
+# plugin, edited in place). The results are committed back here.
+#
+# Telegram needs the repository secret TELEGRAM_BOT_TOKEN: a bot that is an
+# admin of the channel allowed to post, edit and delete messages. Without
+# it only the repository is updated. Variables (optional): TELEGRAM_CHAT
+# (default @fuckgramplugins), TELEGRAM_NOTIFY ("no": no text message about
+# an update).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'plugins/**'
+      - 'tools/**'
+  workflow_dispatch:
+    inputs:
+      all:
+        description: 'Post every plugin again'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build the packages.
+        run: python tools/build.py
+
+      - name: Post to Telegram.
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT: ${{ vars.TELEGRAM_CHAT }}
+          TELEGRAM_NOTIFY: ${{ vars.TELEGRAM_NOTIFY }}
+          ALL: ${{ inputs.all && 'yes' || '' }}
+        run: |
+          if [ -n "$ALL" ]; then
+            python tools/telegram.py --all
+          else
+            python tools/telegram.py
+          fi
+
+      # Also after a failed post: what was posted is remembered.
+      - name: Commit the results.
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist index.json
+          if [ -f channel.json ]; then git add channel.json; fi
+          if git diff --cached --quiet; then
+            echo "Nothing to commit."
+            exit 0
+          fi
+          git commit -m "Publish plugins [skip ci]"
+          git push

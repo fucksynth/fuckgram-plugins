@@ -1,0 +1,18 @@
+{
+    "id": "fuckgram.material_player",
+    "name": "Material Player",
+    "version": "1.1",
+    "author": "fuckgram",
+    "description": "A Material 3 player over the window: colors to match the track, a wavy progress bar, a pause button that changes its shape, seeking by a click on the bar. The corner, the size and the colors are in the plugin settings.",
+    "localized": {
+        "ru": {
+            "name": "Плеер Material",
+            "description": "Плеер в стиле Material 3 поверх окна: цвета под трек, волнистый прогресс, кнопка паузы меняет форму, перемотка по клику на полосе. Угол, размер и цвета — в настройках плагина."
+        }
+    },
+    "api": { "min": 1, "max": 1 },
+    "entry": "init.lua",
+    "icon": "resources/icon.png",
+    "categories": ["appearance", "media"],
+    "permissions": ["player", "ui", "storage"]
+}

@@ -1,0 +1,17 @@
+{
+    "title": "Keyboard Layout",
+    "menu.field": "Fix the layout in the message field",
+    "menu.message": "Convert the layout",
+    "toast.empty_field": "The message field is empty",
+    "toast.no_text": "This message has no text",
+    "toast.copied": "Copied in the other layout",
+    "dialog.copied": "In the other layout (copied)",
+    "settings.header": "Switching",
+    "settings.keep_links": "Keep links and @usernames",
+    "settings.keep_links.about": "They are usually pasted, not typed.",
+    "settings.fix_command": "/fix command",
+    "settings.fix_command.about": "“/fix ghbdtn” is sent as “привет”.",
+    "settings.show_result": "Show the result",
+    "settings.show_result.about": "The text from the message menu is always copied; with this on it is also shown in a window.",
+    "settings.where": "The message field: chat menu (⋮) → Plugins. Someone else's message: its own menu."
+}

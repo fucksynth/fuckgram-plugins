@@ -1,0 +1,17 @@
+{
+    "title": "Calculator",
+    "error.parse": "Could not understand the expression",
+    "settings.counting": "Calculating",
+    "settings.equals": "Calculate on “=” at the end",
+    "settings.equals.about": "“2+2*2=” is sent as “2+2*2 = 6”. /calc works anyway.",
+    "settings.result_only": "Send only the result",
+    "settings.result_only.about": "“6” instead of “2+2*2 = 6”.",
+    "settings.numbers": "Numbers",
+    "settings.separator": "Decimal separator",
+    "settings.separator.auto": "As in the expression",
+    "settings.separator.point": "Point: 2.5",
+    "settings.separator.comma": "Comma: 2,5",
+    "settings.digits": "Significant digits",
+    "settings.example": "Example",
+    "settings.supported": "Understands + − × ÷, brackets, powers (^), percent, sqrt, sin, cos, tan, log, ln, abs, round, floor, ceil, pi and e."
+}
