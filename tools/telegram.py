@@ -45,6 +45,14 @@ class Bot:
         self.url = f"https://api.telegram.org/bot{token}/"
 
     def call(self, method, fields, files=None):
+        if not files:
+            # Without files: JSON. An empty multipart form is sometimes
+            # answered with "400" and no text.
+            request = urllib.request.Request(
+                self.url + method,
+                data=json.dumps(fields, ensure_ascii=False).encode("utf-8"),
+                headers={"Content-Type": "application/json"})
+            return self.send(request)
         boundary = uuid.uuid4().hex
         parts = []
         for key, value in fields.items():
@@ -63,6 +71,9 @@ class Bot:
             self.url + method,
             data=b"".join(parts),
             headers={"Content-Type": f"multipart/form-data; boundary={boundary}"})
+        return self.send(request)
+
+    def send(self, request):
         status = 200
         try:
             with urllib.request.urlopen(request, timeout=60) as response:
