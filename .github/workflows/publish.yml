@@ -5,6 +5,9 @@ name: Publish plugins
 # Telegram channel gets the new and the updated plugins (one post per
 # plugin, edited in place). The results are committed back here.
 #
+# The secret CATALOG_SIGNING_KEY (Ed25519, PEM) signs index.json into
+# index.signed.json; without it the run fails before anything is posted.
+#
 # Telegram needs the repository variable TELEGRAM_POSTING = on and the
 # secret TELEGRAM_BOT_TOKEN: a bot that is an admin of the channel allowed
 # to post, edit and delete messages. Without them only the repository is
@@ -41,6 +44,13 @@ jobs:
       - name: Build the packages.
         run: python tools/build.py
 
+      # index.signed.json: the index with its Ed25519 signature, the only
+      # way the client trusts this repository.
+      - name: Sign the index.
+        env:
+          CATALOG_SIGNING_KEY: ${{ secrets.CATALOG_SIGNING_KEY }}
+        run: python tools/sign.py
+
       # Off until the repository variable TELEGRAM_POSTING is "on": the
       # plugins here may need a client that is not released yet.
       - name: Post to Telegram.
@@ -63,7 +73,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dist index.json
+          git add dist index.json index.signed.json
           if [ -f channel.json ]; then git add channel.json; fi
           if git diff --cached --quiet; then
             echo "Nothing to commit."
