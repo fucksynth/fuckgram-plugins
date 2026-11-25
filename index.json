@@ -2,6 +2,105 @@
   "format": 1,
   "plugins": [
     {
+      "id": "fuckgram.showcase",
+      "version": "1.2",
+      "file": "dist/fuckgram.showcase.flua",
+      "size": 25086,
+      "sha256": "7a15262ffe1a5ec90e8285a2efb0613bb7f5aa2990ff8261d01af4c5702508c7",
+      "sources": "d4e90988c496ffddfb7e82c76c6c8d8a7e4498545ca35769aefcc97b569f3171",
+      "date": 1795599262
+    },
+    {
+      "id": "fuckgram.snowfall",
+      "version": "1.0",
+      "file": "dist/fuckgram.snowfall.flua",
+      "size": 44181,
+      "sha256": "466e3feb249c5da4a3e4f63cb328b1d03b7bee2b9d3cd6094be108449e5eddc9",
+      "sources": "5b4130bec2c0d7616682ee30db74652285e5884b064855afecb84051534095bc",
+      "date": 1795599262
+    },
+    {
+      "id": "fuckgram.text_tools",
+      "version": "1.0",
+      "file": "dist/fuckgram.text_tools.flua",
+      "size": 32431,
+      "sha256": "36dbba7452e2ab8d07fb193848b0658c68a71926ee1f4f52fbf50a40fb74c8f1",
+      "sources": "f470b2ad133c9354eed9ac96f22d579fd2e2a857320efe61277f3d90dd5279d2",
+      "date": 1795599262
+    },
+    {
+      "id": "fuckgram.autoreply",
+      "version": "1.2",
+      "file": "dist/fuckgram.autoreply.flua",
+      "size": 15106,
+      "sha256": "c2e5f5894f49833d8bf81d22ad955df75be880c146ff42a0a0e614a6e759ffae",
+      "sources": "0cc548160010a5cc921e64529ba8c781591920fe0bbf8b9b5cfd9d924fd93673",
+      "date": 1795599261
+    },
+    {
+      "id": "fuckgram.calc",
+      "version": "1.2",
+      "file": "dist/fuckgram.calc.flua",
+      "size": 17766,
+      "sha256": "07701966f961005d8d0e5ac4729bf98c61690bb3e68633b2d009fd888abb2416",
+      "sources": "07a7fa3315e7ed5453a9aa05507278a34cb0b7bf3e0e04aec3557219101530d0",
+      "date": 1795599261
+    },
+    {
+      "id": "fuckgram.currency",
+      "version": "1.2",
+      "file": "dist/fuckgram.currency.flua",
+      "size": 20441,
+      "sha256": "f1868ec24ded6b1699ff501eac2a2b8a9dd26404932b551b6d6e61fe175a4b5a",
+      "sources": "242ee8500bea049a9d36d66f38e3f4f5baeddeaf344f28bc6a2fbac64650a989",
+      "date": 1795599261
+    },
+    {
+      "id": "fuckgram.dice",
+      "version": "1.0",
+      "file": "dist/fuckgram.dice.flua",
+      "size": 31876,
+      "sha256": "21d4a00baf0237490d8c2142fe2bd8c8ab66ea614aba7e983ccbdff1d320d31f",
+      "sources": "615ae0dde83a3c74f969d7a9212c98b9185db90d8ff7c20b4f8564f4ee5d54dd",
+      "date": 1795599261
+    },
+    {
+      "id": "fuckgram.layout",
+      "version": "1.2",
+      "file": "dist/fuckgram.layout.flua",
+      "size": 12317,
+      "sha256": "0865005225f178f14580e6eeb28fce35001eb2fb5356dcd90dc0bffc437f3280",
+      "sources": "d165c6010a0695653413f57519f9e7dff40acfcf332d5f8b3837cae322b8a0ca",
+      "date": 1795599261
+    },
+    {
+      "id": "fuckgram.link_cleaner",
+      "version": "1.2",
+      "file": "dist/fuckgram.link_cleaner.flua",
+      "size": 16660,
+      "sha256": "5212088d2ef0ea749b30ebc7179625b5e8778034d2e18def0411fcc725fe4bde",
+      "sources": "fa031e7b21cad1aba60f04710df3de8b1be6771680c025c6493b2904d8e14bf3",
+      "date": 1795599261
+    },
+    {
+      "id": "fuckgram.pomodoro",
+      "version": "1.0",
+      "file": "dist/fuckgram.pomodoro.flua",
+      "size": 34138,
+      "sha256": "86b914e5a2c01ef975aa725347083f4fa3e75ed26a34a57a43bfc2850161e642",
+      "sources": "83e0b733dccf8497876f8af3778a507be631826f994befc019788dfffbb5feb4",
+      "date": 1795599261
+    },
+    {
+      "id": "fuckgram.reminders",
+      "version": "1.0",
+      "file": "dist/fuckgram.reminders.flua",
+      "size": 39223,
+      "sha256": "6494b87c064838e06beabf3fd4ec5f0c4e59932e9670f936e113ea68c7a94059",
+      "sources": "542b513052403faf5060a730473d9cee312e448222c8153e8463f5d3994d4d87",
+      "date": 1795599261
+    },
+    {
       "id": "fuckgram.material_player",
       "version": "1.2",
       "file": "dist/fuckgram.material_player.flua",
@@ -18,60 +117,6 @@
       "sha256": "3d48115b8856cbac285bf1974d1cc5bc06a2202d2a6a7a037c6202e925e2f752",
       "sources": "b9accc9e2a4615bcccf2d383ea52370267c4e30ff09302b870761aced3a3bb19",
       "date": 1795505913
-    },
-    {
-      "id": "fuckgram.showcase",
-      "version": "1.1",
-      "file": "dist/fuckgram.showcase.flua",
-      "size": 22242,
-      "sha256": "6f4223c5f35ce9a56de641c9ba5f974fcad5856f7540ddd8552d0467390a4891",
-      "sources": "3ea97dce33d2dbdefff204d4f2f03a7474c5c2da4bd16546558950d51dfbad41",
-      "date": 1795442964
-    },
-    {
-      "id": "fuckgram.autoreply",
-      "version": "1.1",
-      "file": "dist/fuckgram.autoreply.flua",
-      "size": 11505,
-      "sha256": "49f3341fbb4098ec53a9d59cf793251532dfb55ad962cccdfdbda7c7cb00943e",
-      "sources": "1ed87bba50ced47737aad88f627efb8cdb8f67142424c592758596452fa439bd",
-      "date": 1795442963
-    },
-    {
-      "id": "fuckgram.calc",
-      "version": "1.1",
-      "file": "dist/fuckgram.calc.flua",
-      "size": 14414,
-      "sha256": "e50a735c7966b339b1ce28429fe7abcca0aec5d588d32cd12283fb71ee619364",
-      "sources": "868a2a7d57ce33099c554c44ed75e9bddbce5e07ce629c00c9414c6bcd57a05c",
-      "date": 1795442963
-    },
-    {
-      "id": "fuckgram.currency",
-      "version": "1.1",
-      "file": "dist/fuckgram.currency.flua",
-      "size": 17144,
-      "sha256": "6c089f3283162bfacb24b0ebdf1f28e529150c2669a05400332002db9aab3fd7",
-      "sources": "3869b8cc534da1680870b02cd9dc42c1e7360db9ae5ff1cb5ca1e1f28c803fd2",
-      "date": 1795442963
-    },
-    {
-      "id": "fuckgram.layout",
-      "version": "1.1",
-      "file": "dist/fuckgram.layout.flua",
-      "size": 10641,
-      "sha256": "2016a81dcdaee07c5c88c74bca917a7f18ddc6741022bf8d5fd1aa4a312abe96",
-      "sources": "b46e769cdb630be75693db6900101a8005ab69d8f086d4ea63600efd5be001f7",
-      "date": 1795442963
-    },
-    {
-      "id": "fuckgram.link_cleaner",
-      "version": "1.1",
-      "file": "dist/fuckgram.link_cleaner.flua",
-      "size": 13601,
-      "sha256": "34c8933f0af574ba59159f6f581dde88b3fc4cf8cde9e6f3ef741b6ff725bbe5",
-      "sources": "f94280908b787afb1da2a800c2437a91c21ff8d340db599d70432da3d6f6f22a",
-      "date": 1795442963
     }
   ]
 }

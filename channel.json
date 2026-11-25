@@ -3,28 +3,33 @@
   "posts": {
     "fuckgram.autoreply": {
       "message_id": 15,
-      "sha256": "49f3341fbb4098ec53a9d59cf793251532dfb55ad962cccdfdbda7c7cb00943e",
-      "version": "1.1"
+      "sha256": "c2e5f5894f49833d8bf81d22ad955df75be880c146ff42a0a0e614a6e759ffae",
+      "version": "1.2"
     },
     "fuckgram.calc": {
       "message_id": 16,
-      "sha256": "e50a735c7966b339b1ce28429fe7abcca0aec5d588d32cd12283fb71ee619364",
-      "version": "1.1"
+      "sha256": "07701966f961005d8d0e5ac4729bf98c61690bb3e68633b2d009fd888abb2416",
+      "version": "1.2"
     },
     "fuckgram.currency": {
       "message_id": 17,
-      "sha256": "6c089f3283162bfacb24b0ebdf1f28e529150c2669a05400332002db9aab3fd7",
-      "version": "1.1"
+      "sha256": "f1868ec24ded6b1699ff501eac2a2b8a9dd26404932b551b6d6e61fe175a4b5a",
+      "version": "1.2"
+    },
+    "fuckgram.dice": {
+      "message_id": 30,
+      "sha256": "21d4a00baf0237490d8c2142fe2bd8c8ab66ea614aba7e983ccbdff1d320d31f",
+      "version": "1.0"
     },
     "fuckgram.layout": {
       "message_id": 18,
-      "sha256": "2016a81dcdaee07c5c88c74bca917a7f18ddc6741022bf8d5fd1aa4a312abe96",
-      "version": "1.1"
+      "sha256": "0865005225f178f14580e6eeb28fce35001eb2fb5356dcd90dc0bffc437f3280",
+      "version": "1.2"
     },
     "fuckgram.link_cleaner": {
       "message_id": 19,
-      "sha256": "34c8933f0af574ba59159f6f581dde88b3fc4cf8cde9e6f3ef741b6ff725bbe5",
-      "version": "1.1"
+      "sha256": "5212088d2ef0ea749b30ebc7179625b5e8778034d2e18def0411fcc725fe4bde",
+      "version": "1.2"
     },
     "fuckgram.material_player": {
       "message_id": 20,
@@ -36,10 +41,30 @@
       "sha256": "3d48115b8856cbac285bf1974d1cc5bc06a2202d2a6a7a037c6202e925e2f752",
       "version": "1.4"
     },
+    "fuckgram.pomodoro": {
+      "message_id": 33,
+      "sha256": "86b914e5a2c01ef975aa725347083f4fa3e75ed26a34a57a43bfc2850161e642",
+      "version": "1.0"
+    },
+    "fuckgram.reminders": {
+      "message_id": 34,
+      "sha256": "6494b87c064838e06beabf3fd4ec5f0c4e59932e9670f936e113ea68c7a94059",
+      "version": "1.0"
+    },
     "fuckgram.showcase": {
       "message_id": 22,
-      "sha256": "6f4223c5f35ce9a56de641c9ba5f974fcad5856f7540ddd8552d0467390a4891",
-      "version": "1.1"
+      "sha256": "7a15262ffe1a5ec90e8285a2efb0613bb7f5aa2990ff8261d01af4c5702508c7",
+      "version": "1.2"
+    },
+    "fuckgram.snowfall": {
+      "message_id": 36,
+      "sha256": "466e3feb249c5da4a3e4f63cb328b1d03b7bee2b9d3cd6094be108449e5eddc9",
+      "version": "1.0"
+    },
+    "fuckgram.text_tools": {
+      "message_id": 37,
+      "sha256": "36dbba7452e2ab8d07fb193848b0658c68a71926ee1f4f52fbf50a40fb74c8f1",
+      "version": "1.0"
     }
   }
 }
