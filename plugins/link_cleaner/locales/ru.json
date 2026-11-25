@@ -8,7 +8,7 @@
     },
     "menu.copy": "Скопировать без меток",
     "toast.no_text": "В сообщении нет текста",
-    "toast.no_links": "В сообщении нет ссылок",
+    "toast.no_links": "Здесь нет ссылок",
     "toast.copied": {
         "one": "Скопировано, убрана {1} метка слежки",
         "few": "Скопировано, убраны {1} метки слежки",
@@ -17,12 +17,28 @@
     },
     "toast.copied_clean": "Скопировано: меток в ссылках не было",
     "settings.header": "Очистка",
+    "settings.auto": "Чистить ссылки, которые я отправляю",
+    "settings.auto.about": "Перед отправкой сообщения. Если выключить, чистит только «Скопировать без меток» в меню сообщения.",
     "settings.notify": "Сообщать",
     "settings.notify.about": "Короткое уведомление, когда из вашего сообщения убраны метки.",
+    "settings.what": "Что убирать",
     "settings.site_rules": "Метки отдельных сайтов",
-    "settings.site_rules.about": "si у YouTube и Spotify, igsh у Instagram, spm у AliExpress и другие. Если выключить, убираются только общие метки вроде utm_* и fbclid.",
+    "settings.site_rules.about": "si у YouTube и Spotify, igsh у Instagram, spm у AliExpress, ref у Amazon, ved у Google и другие. Если выключить, убираются только общие метки вроде utm_* и fbclid.",
+    "settings.unwrap": "Разворачивать переадресацию",
+    "settings.unwrap.about": "google.com/url?q=…, vk.com/away.php?to=…, l.facebook.com и подобные заменяются адресом, куда они ведут, — переадресация не узнает о переходе.",
     "settings.extra": "Убирать ещё",
     "settings.extra.about": "Свои параметры через запятую.",
     "settings.extra.placeholder": "ref, source",
-    "settings.kept": "Остальные параметры — номер страницы, поиск, время в видео — остаются как были."
+    "settings.tools": "Инструменты",
+    "settings.try": "Почистить ссылку",
+    "settings.try.about": "Вставьте ссылку или текст со ссылками — чистый вариант скопируется.",
+    "settings.total": "Убрано за всё время",
+    "settings.total.about": {
+        "one": "{1} метка слежки",
+        "few": "{1} метки слежки",
+        "many": "{1} меток слежки",
+        "other": "{1} метки слежки"
+    },
+    "settings.total.none": "Пока ничего",
+    "settings.kept": "Остальные параметры — номер страницы, поиск, время в видео — остаются как были. Ссылки без https:// (www.site.ru, youtu.be/…) тоже чистятся."
 }

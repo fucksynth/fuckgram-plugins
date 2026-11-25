@@ -1,18 +1,18 @@
 {
     "id": "fuckgram.layout",
     "name": "Keyboard Layout",
-    "version": "1.1",
+    "version": "1.2",
     "author": "fuckgram",
-    "description": "Fixes text typed in the wrong keyboard layout, Russian and English: “ghbdtn” → “привет” and back. The message field from the chat menu (⋮) or with “/fix text”, someone else's message from its menu: shows and copies it.",
+    "description": "Fixes text typed in the wrong keyboard layout, Russian and English: “ghbdtn” → “привет” and back. Your own sent message is fixed in place from its menu, someone else's is shown and copied. The message field: from the chat menu (⋮), the send button menu (sends it fixed at once) or with “/fix text”. Links, addresses and @usernames stay as they are.",
     "localized": {
         "ru": {
             "name": "Раскладка",
-            "description": "Исправляет текст, набранный не в той раскладке: «ghbdtn» → «привет» и обратно. Поле ввода — из меню чата (⋮) или командой «/fix текст», чужое сообщение — из его меню: покажет и скопирует."
+            "description": "Исправляет текст, набранный не в той раскладке: «ghbdtn» → «привет» и обратно. Своё отправленное сообщение исправит на месте из его меню, чужое — покажет и скопирует. Поле ввода — из меню чата (⋮), из меню кнопки отправки (сразу отправит исправленным) или командой «/fix текст». Ссылки, почту и @имена не трогает."
         }
     },
     "api": { "min": 1, "max": 1 },
     "entry": "init.lua",
     "icon": "resources/icon.png",
     "categories": ["chats", "tools"],
-    "permissions": ["messages.send", "compose", "ui", "storage"]
+    "permissions": ["messages.send", "messages.manage", "compose", "ui", "storage"]
 }

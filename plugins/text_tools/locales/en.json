@@ -1,0 +1,19 @@
+{
+    "title": "Text Tools",
+    "error": "Could not change this text",
+    "settings.typography": "Typography",
+    "settings.auto": "Fix every message",
+    "settings.auto.about": "Before sending, quotes, dashes and dots are made typographic. Code and links stay as they are. Bold and other formatting of a message that gets changed is lost.",
+    "settings.quotes": "\"Quotes\" → «quotes»",
+    "settings.quote_style": "Quote marks",
+    "settings.dashes": "Word - word → word — word",
+    "settings.ellipsis": "... → …",
+    "settings.example": "Example",
+    "settings.example.text": "\"Wait...\" - she said. \"It's the \"best\" one\"",
+    "settings.kept": "Messages that start with / are never changed by typography. /fix text fixes one message even when this is off.",
+    "settings.commands": "Commands",
+    "settings.commands.switch": "Commands",
+    "settings.skip_bots": "Leave commands to bots",
+    "settings.skip_bots.about": "In a chat with a bot, /up and others go to the bot as they are.",
+    "settings.list": "/up TEXT, /low text, /title Each Word, /mock aLtErNaTiNg, /rev txet, /flip ʇxǝʇ, /spoiler hidden text, /fix typography for one message. Write the text after the command: \"/up hello\"."
+}

@@ -1,13 +1,13 @@
 {
     "id": "fuckgram.showcase",
     "name": "API Showcase",
-    "version": "1.1",
+    "version": "1.2",
     "author": "fuckgram",
-    "description": "Shows what plugins can do: a settings page with every kind of row, items in menus, at the send button and in settings sections, a widget over the window with the open chat, a box with buttons, sending with formatting and texts in two languages.",
+    "description": "Shows what plugins can do: a settings page with every kind of row and rows drawn on a canvas, theme colors, items in menus, at the send button and in settings sections, a widget over the window with the open chat and a clock that you drag with the mouse, every kind of dialog, sending with formatting and texts in two languages with plurals.",
     "localized": {
         "ru": {
             "name": "Витрина API",
-            "description": "Показывает, что умеют плагины: страница настроек со всеми видами строк, пункты в меню, у кнопки отправки и в разделах настроек, плашка поверх окна с открытым чатом, окно с кнопками, отправка с разметкой и тексты на двух языках."
+            "description": "Показывает, что умеют плагины: страница настроек со всеми видами строк и строками, нарисованными на холсте, цвета темы, пункты в меню, у кнопки отправки и в разделах настроек, плашка поверх окна с открытым чатом и часами, которую можно перетащить мышкой, все виды окон, отправка с разметкой и тексты на двух языках с числами и словами."
         }
     },
     "api": { "min": 1, "max": 1 },

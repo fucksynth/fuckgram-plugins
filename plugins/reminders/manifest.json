@@ -1,0 +1,18 @@
+{
+    "id": "fuckgram.reminders",
+    "name": "Reminders",
+    "version": "1.0",
+    "author": "fuckgram",
+    "description": "Reminds you of things: “/remind 10m tea”, “/remind 18:30 call mom”, “/remind tomorrow 9:00 dentist”. The command is not sent to the chat. At the time a window with snooze buttons appears, and if you like, a message comes to Saved Messages. Reminders survive a restart; /reminders and the settings page list them.",
+    "localized": {
+        "ru": {
+            "name": "Напоминания",
+            "description": "Напоминает о делах: «/напомни 10м чай», «/напомни 18:30 позвонить маме», «/напомни завтра 9:00 к зубному». Команда в чат не уходит. В нужное время появится окно с кнопками «отложить», а по желанию — сообщение в «Избранном». Напоминания не пропадают после перезапуска; список — по /напоминания и в настройках."
+        }
+    },
+    "api": { "min": 1, "max": 1 },
+    "entry": "init.lua",
+    "icon": "resources/icon.png",
+    "categories": ["tools"],
+    "permissions": ["messages.send", "chats.read", "ui", "storage"]
+}

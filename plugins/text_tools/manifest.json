@@ -1,0 +1,18 @@
+{
+    "id": "fuckgram.text_tools",
+    "name": "Text Tools",
+    "version": "1.0",
+    "author": "fuckgram",
+    "description": "Changes text before sending: “/up text” for CAPITALS, /low, /title, /mock for aLtErNaTiNg case, /rev, /flip for upside-down text and /spoiler. Can also fix typography in every message: «quotes», dashes — and ellipses…",
+    "localized": {
+        "ru": {
+            "name": "Работа с текстом",
+            "description": "Меняет текст перед отправкой: «/up текст» — ЗАГЛАВНЫМИ, /low, /title, /mock — вПеРеМеШкУ, /rev — задом наперёд, /flip — вверх ногами, /spoiler — под спойлер. Может исправлять типографику в каждом сообщении: «кавычки», тире — и многоточия…"
+        }
+    },
+    "api": { "min": 1, "max": 1 },
+    "entry": "init.lua",
+    "icon": "resources/icon.png",
+    "categories": ["tools", "fun"],
+    "permissions": ["messages.send", "chats.read", "ui", "storage"]
+}

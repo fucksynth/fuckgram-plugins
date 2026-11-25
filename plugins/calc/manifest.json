@@ -1,13 +1,13 @@
 {
     "id": "fuckgram.calc",
     "name": "Calculator",
-    "version": "1.1",
+    "version": "1.2",
     "author": "fuckgram",
-    "description": "Calculates right in the message field: type “2+2*2=” or “/calc (15000-3200)*12” and “2+2*2 = 6” is sent. Brackets, powers, percent, sqrt, sin, cos, log, round, pi and e.",
+    "description": "Calculates right in the message field: type “2+2*2=” or “/calc (15000-3200)*12” and “2+2*2 = 6” is sent. Someone else's expression is counted from the message menu. Brackets, powers, percent, factorial, √, sin, cos, log, round, pi, e, ans (the last result), degrees or radians, thousands split if you like.",
     "localized": {
         "ru": {
             "name": "Калькулятор",
-            "description": "Считает прямо в поле ввода: напишите «2+2*2=» или «/calc (15000-3200)*12» — уйдёт «2+2*2 = 6». Скобки, степени, проценты, sqrt, sin, cos, log, round, pi и e."
+            "description": "Считает прямо в поле ввода: напишите «2+2*2=» или «/calc (15000-3200)*12» — уйдёт «2+2*2 = 6». Чужое выражение посчитает из меню сообщения. Скобки, степени, проценты, факториал, √, sin, cos, log, round, pi, e, ans (последний ответ), градусы или радианы, по желанию — разбивка на тысячи."
         }
     },
     "api": { "min": 1, "max": 1 },

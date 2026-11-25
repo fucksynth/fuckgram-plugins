@@ -2,11 +2,35 @@
     "title": "Auto-Reply",
     "reply.default": "I'm away right now and will reply as soon as I can.",
     "toast.on": "On. The answer: “{1}”",
-    "toast.off": "Off",
+    "toast.on_until": "On till {time}. The answer: “{text}”",
+    "toast.off": "Off.",
+    "toast.off_timer": "Turned off by itself.",
+    "toast.nobody": "Nobody wrote meanwhile.",
+    "toast.wrote": {
+        "one": "{count} person wrote: {names}",
+        "other": "{count} people wrote: {names}"
+    },
+    "names.more": {
+        "one": "{text} and {count} more",
+        "other": "{text} and {count} more"
+    },
+    "hours": {
+        "one": "In {1} hour",
+        "other": "In {1} hours"
+    },
     "settings.reply": "Answer",
     "settings.enabled": "Answer while I'm away",
     "settings.enabled.about": "People who write to you in private chats get the text below.",
+    "settings.enabled.until": "On, turns off by itself at {1}.",
     "settings.text": "Text",
+    "settings.text.about": "{name} is replaced with the first name of the person.",
+    "settings.reply_to": "As a reply",
+    "settings.reply_to.about": "The answer quotes the message it answers.",
+    "settings.turning_off": "Turning off",
+    "settings.off_after": "Turn off by itself",
+    "settings.off_after.never": "Never",
+    "settings.off_on_send": "When I write myself",
+    "settings.off_on_send.about": "Any message you send from this computer turns it off. Messages from the phone do not.",
     "settings.how_often": "How often",
     "settings.repeat": "Minutes between answers",
     "settings.repeat.about": {
@@ -14,9 +38,26 @@
         "other": "One person gets the answer at most once in {1} minutes."
     },
     "settings.quiet": "Minutes of silence",
-    "settings.quiet.about": "If you wrote to a chat yourself, it does not answer there for this long.",
+    "settings.quiet.about": {
+        "one": "After you write to a chat yourself, it keeps quiet there for {1} minute.",
+        "other": "After you write to a chat yourself, it keeps quiet there for {1} minutes."
+    },
+    "settings.away": "While you were away",
+    "settings.log": "Who wrote",
     "settings.commands": "Commands",
     "settings.commands.switch": "/away and /back",
-    "settings.commands.about": "“/away text” turns it on with a new text, “/back” turns it off. The commands are not sent.",
-    "settings.who": "Bots, groups, channels and you yourself never get an answer."
+    "settings.commands.about": "“/away text” turns it on with a new text, “/away 2h text” also turns it off in 2 hours (m, h, d work too), “/back” turns it off. The commands are not sent.",
+    "settings.who": "Bots, groups, channels, Telegram's service notices and you yourself never get an answer.",
+    "log.title": "Who wrote",
+    "log.header": {
+        "one": "{1} person",
+        "other": "{1} people"
+    },
+    "log.entry": {
+        "one": "{count} message, the last at {time}",
+        "other": "{count} messages, the last at {time}"
+    },
+    "log.empty": "Nobody has written yet.",
+    "log.about": "Click a name to open the chat. The list starts over every time the auto-reply turns on.",
+    "log.clear": "Clear the list"
 }

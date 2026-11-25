@@ -1,0 +1,26 @@
+{
+    "id": "fuckgram.pomodoro",
+    "name": "Pomodoro",
+    "version": "1.0",
+    "author": "fuckgram",
+    "description": "A round focus timer over the window: a ring shows what is left, a click starts or pauses it. Work, short and long breaks follow each other with a notice at the end of each; pomodoros done today are counted. Lengths, size and place are in the plugin settings; the main menu shows and hides the timer.",
+    "localized": {
+        "ru": {
+            "name": "Помодоро",
+            "description": "Круглый таймер для работы без отвлечений поверх окна: кольцо показывает, сколько осталось, щелчок запускает и ставит на паузу. Работа, короткий и длинный перерывы идут по кругу, в конце каждого — уведомление; помидоры за день считаются. Длительность, размер и место — в настройках плагина, показать и спрятать — из главного меню."
+        }
+    },
+    "api": {
+        "min": 1,
+        "max": 1
+    },
+    "entry": "init.lua",
+    "icon": "resources/icon.png",
+    "categories": [
+        "tools"
+    ],
+    "permissions": [
+        "ui",
+        "storage"
+    ]
+}

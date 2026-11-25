@@ -1,13 +1,13 @@
 {
     "id": "fuckgram.link_cleaner",
     "name": "Link Cleaner",
-    "version": "1.1",
+    "version": "1.2",
     "author": "fuckgram",
-    "description": "Removes tracking tags from links in your messages: utm_*, fbclid, gclid, yclid, si on YouTube and Spotify and others. The link opens the same, but the site does not learn where you got it.",
+    "description": "Removes tracking tags from links in your messages: utm_*, fbclid, gclid, yclid, si on YouTube and Spotify, ref on Amazon and others, and unwraps redirect links like google.com/url and vk.com/away.php. The link opens the same, but the site does not learn where you got it. Someone else's message can be copied with clean links from its menu.",
     "localized": {
         "ru": {
             "name": "Чистые ссылки",
-            "description": "Убирает из ссылок в ваших сообщениях метки слежки: utm_*, fbclid, gclid, yclid, si у YouTube и Spotify и другие. Ссылка открывается так же, но сайт не узнает, откуда вы её взяли."
+            "description": "Убирает из ссылок в ваших сообщениях метки слежки: utm_*, fbclid, gclid, yclid, si у YouTube и Spotify, ref у Amazon и другие, и разворачивает переадресацию вроде google.com/url и vk.com/away.php. Ссылка открывается так же, но сайт не узнает, откуда вы её взяли. Чужое сообщение можно скопировать с чистыми ссылками из его меню."
         }
     },
     "api": { "min": 1, "max": 1 },

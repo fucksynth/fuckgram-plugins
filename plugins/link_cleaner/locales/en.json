@@ -6,19 +6,33 @@
     },
     "menu.copy": "Copy without tracking",
     "toast.no_text": "This message has no text",
-    "toast.no_links": "This message has no links",
+    "toast.no_links": "No links here",
     "toast.copied": {
         "one": "Copied, {1} tracking tag removed",
         "other": "Copied, {1} tracking tags removed"
     },
     "toast.copied_clean": "Copied: the links had no tracking tags",
     "settings.header": "Cleaning",
+    "settings.auto": "Clean links I send",
+    "settings.auto.about": "Before a message goes. When off, only “Copy without tracking” in the message menu cleans.",
     "settings.notify": "Notify",
     "settings.notify.about": "A short notice when tags are removed from a message you send.",
+    "settings.what": "What to remove",
     "settings.site_rules": "Tags of particular sites",
-    "settings.site_rules.about": "si on YouTube and Spotify, igsh on Instagram, spm on AliExpress and others. When off, only common tags like utm_* and fbclid are removed.",
+    "settings.site_rules.about": "si on YouTube and Spotify, igsh on Instagram, spm on AliExpress, ref on Amazon, ved on Google and others. When off, only common tags like utm_* and fbclid are removed.",
+    "settings.unwrap": "Unwrap redirect links",
+    "settings.unwrap.about": "google.com/url?q=…, vk.com/away.php?to=…, l.facebook.com and the like become the address they lead to, so the redirect does not learn about the click.",
     "settings.extra": "Also remove",
     "settings.extra.about": "Your own parameters, separated by commas.",
     "settings.extra.placeholder": "ref, source",
-    "settings.kept": "Other parameters, such as the page number, a search or the time in a video, stay as they were."
+    "settings.tools": "Tools",
+    "settings.try": "Clean a link",
+    "settings.try.about": "Paste a link or a text with links: the clean one is copied.",
+    "settings.total": "Removed so far",
+    "settings.total.about": {
+        "one": "{1} tracking tag",
+        "other": "{1} tracking tags"
+    },
+    "settings.total.none": "Nothing yet",
+    "settings.kept": "Other parameters, such as the page number, a search or the time in a video, stay as they were. Links without https:// (www.site.com, youtu.be/…) are cleaned too."
 }

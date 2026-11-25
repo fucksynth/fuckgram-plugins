@@ -1,13 +1,13 @@
 {
     "id": "fuckgram.currency",
     "name": "Exchange Rates",
-    "version": "1.1",
+    "version": "1.2",
     "author": "fuckgram",
-    "description": "“/cur 100 usd rub” sends “100 USD = 9,250.00 RUB” at a fresh rate. Understands codes (USD, EUR, CNY, KZT…), the symbols $ € ₽ ¥ and names: dollar, euro, ruble, yuan, tenge.",
+    "description": "“/cur 100 usd rub” sends “100 USD = 9,250.00 RUB” at a fresh rate, “/cur 100 usd rub eur cny” into several currencies at once. Someone else's “250 €” is converted from the message menu. Understands codes (USD, EUR, CNY, KZT…), the symbols $ € ₽ ¥, names (dollar, euro, ruble, yuan, tenge) and 100k.",
     "localized": {
         "ru": {
             "name": "Курсы валют",
-            "description": "«/cur 100 usd rub» отправляет «100 USD = 9 250,00 RUB» по свежему курсу. Понимает коды (USD, EUR, CNY, KZT…), значки $ € ₽ ¥ и слова: доллар, евро, рубль, юань, тенге."
+            "description": "«/cur 100 usd rub» отправляет «100 USD = 9 250,00 RUB» по свежему курсу, «/cur 100 usd rub eur cny» — сразу в несколько валют. Чужие «250 €» переведёт из меню сообщения. Понимает коды (USD, EUR, CNY, KZT…), значки $ € ₽ ¥, слова (доллар, евро, рубль, юань, тенге) и 100к."
         }
     },
     "api": { "min": 1, "max": 1 },
