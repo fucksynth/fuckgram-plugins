@@ -1,7 +1,7 @@
 {
     "id": "fuckgram.snowfall",
     "name": "Snowfall",
-    "version": "1.0",
+    "version": "1.1",
     "author": "fuckgram",
     "description": "Gentle snow over the window: flakes drift down with a light wind and never get in the way of clicks. By default it snows only from December to February; amount, speed, flake size and wind are in the plugin settings.",
     "localized": {

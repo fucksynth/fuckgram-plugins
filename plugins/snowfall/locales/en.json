@@ -20,5 +20,10 @@
     "size.large": "Large",
     "settings.wind": "Wind",
     "settings.wind.about": "A light breeze carries the flakes a little to the side.",
-    "settings.about": "The snow does not get in the way: clicks go through it. It pauses while the window is in the background."
+    "settings.about": "The snow does not get in the way: clicks go through it. It pauses while the window is in the background.",
+    "settings.drift_header": "Drift",
+    "settings.drift": "Snow piles up",
+    "settings.drift.about": "Flakes gather in a drift along the bottom of the window. It falls off when the window is resized.",
+    "settings.drift_height": "Drift height, px",
+    "settings.drift_clear": "Shake the drift off"
 }
