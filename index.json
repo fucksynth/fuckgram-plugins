@@ -2,21 +2,21 @@
   "format": 1,
   "plugins": [
     {
+      "id": "fuckgram.snowfall",
+      "version": "1.1",
+      "file": "dist/fuckgram.snowfall.flua",
+      "size": 45845,
+      "sha256": "d5ed3d567cc206b66162f117a9b1c33383c501d361e22a584a605185a1b1394d",
+      "sources": "7810f42ab451310c488cd0b24847cce90b84d13f23ff0fa4d5c0887be878c4cc",
+      "date": 1795600444
+    },
+    {
       "id": "fuckgram.showcase",
       "version": "1.2",
       "file": "dist/fuckgram.showcase.flua",
       "size": 25086,
       "sha256": "7a15262ffe1a5ec90e8285a2efb0613bb7f5aa2990ff8261d01af4c5702508c7",
       "sources": "d4e90988c496ffddfb7e82c76c6c8d8a7e4498545ca35769aefcc97b569f3171",
-      "date": 1795599262
-    },
-    {
-      "id": "fuckgram.snowfall",
-      "version": "1.0",
-      "file": "dist/fuckgram.snowfall.flua",
-      "size": 44181,
-      "sha256": "466e3feb249c5da4a3e4f63cb328b1d03b7bee2b9d3cd6094be108449e5eddc9",
-      "sources": "5b4130bec2c0d7616682ee30db74652285e5884b064855afecb84051534095bc",
       "date": 1795599262
     },
     {
