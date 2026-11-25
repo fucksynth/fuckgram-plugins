@@ -15,6 +15,7 @@ local state -- what tg.player.state() said last time
 local shown_key -- what the card shows, to repaint only on changes
 local morph = 1 -- 0: a square play button (paused), 1: a round one (playing)
 local last_tick = tg.now()
+local dismissed -- the track the card was closed for, until another one plays
 
 -- Settings.
 
@@ -134,6 +135,12 @@ end
 
 local layout = {} -- hit areas of the last paint
 
+-- has_previous / has_next are false when there is nowhere to go; older
+-- clients give nil, then both look active.
+local function side_color(colors, available)
+	return available == false and colors.track or colors.text
+end
+
 local function draw_previous(c, x, y, color)
 	c:rect(x, y - 7, 3, 14, color, 1)
 	c:polygon({ x + 15, y - 8, x + 15, y + 8, x + 4, y }, color)
@@ -190,11 +197,14 @@ local function paint(c)
 	local w, h = c:size()
 	local colors = scheme(state.title)
 	local compact = (setting("size", 1) == 2)
+	c:opacity(clamp((tonumber(setting("opacity", 100)) or 100) / 100, 0.3, 1))
 	c:rect(0, 0, w, h, colors.surface, 28)
+	c:stroke(0, 0, w, h, colors.track, 1, 28)
 
 	-- "Cover": the tonal container with a note.
 	local art = compact and 52 or 64
 	local ax, ay = 12, compact and 12 or 14
+	layout.cover = { x = ax, y = ay, width = art, height = art }
 	c:rect(ax, ay, art, art, colors.container, 18)
 	c:text(ax, ay + art / 2 - 16, "♪", {
 		size = 26,
@@ -206,7 +216,15 @@ local function paint(c)
 
 	local tx = ax + art + 14
 	-- The compact card keeps its buttons on the right of the text.
-	local tw = compact and (w - tx - 116) or (w - tx - 16)
+	local tw = compact and (w - tx - 116) or (w - tx - 40)
+	layout.close = nil
+	if not compact then
+		-- A small cross: hides the card until another track plays.
+		local cx, cy = w - 22, 22
+		c:line(cx - 5, cy - 5, cx + 5, cy + 5, colors.subtext, 2)
+		c:line(cx - 5, cy + 5, cx + 5, cy - 5, colors.subtext, 2)
+		layout.close = { x = cx - 12, y = cy - 12, width = 24, height = 24 }
+	end
 	local duration = state.duration or 0
 	local title = state.title or ""
 	if state.voice then
@@ -235,9 +253,9 @@ local function paint(c)
 		draw_progress(c, tx, ay + 42, tw, fraction, state.playing, colors)
 		local cy = h / 2
 		local bx = w - 104
-		draw_previous(c, bx, cy, colors.text)
+		draw_previous(c, bx, cy, side_color(colors, state.has_previous))
 		draw_play_pause(c, bx + 46, cy, 38, state.playing, colors)
-		draw_next(c, bx + 76, cy, colors.text)
+		draw_next(c, bx + 76, cy, side_color(colors, state.has_next))
 		layout.buttons = {
 			{ x = bx - 6, width = 26, action = "previous" },
 			{ x = bx + 26, width = 40, action = "toggle" },
@@ -257,10 +275,10 @@ local function paint(c)
 		align = "right",
 	})
 	local cy = ay + art / 2 + 12
-	local bx = tx + tw - 112
-	draw_previous(c, bx, cy, colors.text)
+	local bx = w - 16 - 112
+	draw_previous(c, bx, cy, side_color(colors, state.has_previous))
 	draw_play_pause(c, bx + 54, cy, 44, state.playing, colors)
-	draw_next(c, bx + 94, cy, colors.text)
+	draw_next(c, bx + 94, cy, side_color(colors, state.has_next))
 	layout.buttons = {
 		{ x = bx - 8, width = 30, action = "previous" },
 		{ x = bx + 30, width = 48, action = "toggle" },
@@ -269,7 +287,25 @@ local function paint(c)
 	layout.buttons_y = { cy - 24, cy + 24 }
 end
 
+local function inside(box, x, y)
+	return box and x >= box.x and x <= box.x + box.width
+		and y >= box.y and y <= box.y + box.height
+end
+
+local close_card
+
 local function click(x, y)
+	if inside(layout.close, x, y) then
+		dismissed = state and (state.title or "") .. "|" .. (state.performer or "")
+		close_card()
+		return
+	elseif inside(layout.cover, x, y) then
+		-- The cover leads to the chat the track came from.
+		if state and state.peer then
+			pcall(tg.ui.open, state.peer)
+		end
+		return
+	end
 	local bar = layout.progress
 	if bar and x >= bar.x and x <= bar.x + bar.width
 		and y >= bar.y and y <= bar.y + bar.height then
@@ -296,7 +332,7 @@ end
 
 -- The card follows the player.
 
-local function close_card()
+close_card = function()
 	if overlay then
 		overlay:close()
 		overlay = nil
@@ -304,17 +340,57 @@ local function close_card()
 	shown_key = nil
 end
 
-local function open_card()
+-- Where the card is: a corner and the gap to it. A card put by the mouse
+-- keeps the corner it was dropped nearest to, so it stays in its place
+-- when the window is resized.
+local function placement()
 	local size = size_option()
-	overlay = tg.ui.overlay{
-		corner = CORNERS[setting("corner", 1)] or CORNERS[1],
-		x = 16,
-		y = 16,
+	local corner = tonumber(setting("pos_corner", 0)) or 0
+	local x, y = 16, 16
+	if corner >= 1 and corner <= 4 and setting("draggable", true) then
+		x = tonumber(setting("pos_x", 16)) or 16
+		y = tonumber(setting("pos_y", 16)) or 16
+	else
+		corner = setting("corner", 1)
+	end
+	-- Not out of a window that got smaller.
+	local ww, wh = tg.ui.window_size()
+	if ww then
+		x = clamp(x, 0, math.max(ww - size.width, 0))
+		y = clamp(y, 0, math.max(wh - size.height, 0))
+	end
+	return {
+		corner = CORNERS[corner] or CORNERS[1],
+		x = x,
+		y = y,
 		width = size.width,
 		height = size.height,
-		paint = paint,
-		on_click = click,
 	}
+end
+
+local function dropped(x, y)
+	local size = size_option()
+	local ww, wh = tg.ui.window_size()
+	if not ww or not overlay then
+		return
+	end
+	local right = x + size.width / 2 > ww / 2
+	local bottom = y + size.height / 2 > wh / 2
+	local corner = (bottom and 0 or 2) + (right and 1 or 2)
+	plugin.settings.set("pos_corner", corner)
+	plugin.settings.set("pos_x", math.max(0, math.floor(right and (ww - x - size.width) or x)))
+	plugin.settings.set("pos_y", math.max(0, math.floor(bottom and (wh - y - size.height) or y)))
+	overlay:move(placement())
+end
+
+local function open_card()
+	local spot = placement()
+	local draggable = setting("draggable", true) and true or nil
+	spot.paint = paint
+	spot.on_click = click
+	spot.draggable = draggable
+	spot.on_drop = draggable and dropped or nil
+	overlay = tg.ui.overlay(spot)
 end
 
 local function tick()
@@ -324,6 +400,13 @@ local function tick()
 	state = setting("enabled", true) and tg.player.state() or nil
 	if state and not state.playing and not setting("paused", true) then
 		state = nil
+	end
+	if state and dismissed then
+		if dismissed == (state.title or "") .. "|" .. (state.performer or "") then
+			state = nil
+		else
+			dismissed = nil
+		end
 	end
 	if not state then
 		close_card()
@@ -426,7 +509,31 @@ local function settings_page()
 			},
 			default = 1,
 			icon = "expand",
+			on_change = function()
+				-- A chosen corner wins over the place the card was put.
+				plugin.settings.set("pos_corner", 0)
+				rebuild_card()
+			end,
+		},
+		{
+			type = "switch",
+			key = "draggable",
+			text = plugin.t("settings.draggable"),
+			subtext = plugin.t("settings.draggable.about"),
+			icon = "customize",
+			default = true,
 			on_change = rebuild_card,
+		},
+		{
+			type = "text",
+			text = plugin.t("settings.reset_place"),
+			icon = "expand",
+			accent = true,
+			on_click = function()
+				plugin.settings.set("pos_corner", 0)
+				rebuild_card()
+				pcall(tg.toast, plugin.t("toast.reset_place"))
+			end,
 		},
 		{
 			type = "selector",
@@ -438,6 +545,18 @@ local function settings_page()
 			on_change = rebuild_card,
 		},
 		{ type = "header", text = plugin.t("settings.style") },
+		{
+			type = "slider",
+			key = "opacity",
+			text = plugin.t("settings.opacity"),
+			min = 30,
+			max = 100,
+			step = 5,
+			default = 100,
+			on_change = function()
+				shown_key = nil
+			end,
+		},
 		{
 			type = "selector",
 			key = "palette",

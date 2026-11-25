@@ -27,5 +27,10 @@
     "preview.title": "Track title",
     "preview.performer": "Artist",
     "preview.caption": "This is how the card looks:",
-    "settings.clicks": "The buttons and the progress bar work right on the card."
+    "settings.clicks": "The buttons and the progress bar work right on the card. The cover opens the chat with the track, the cross hides the card until the next track.",
+    "settings.draggable": "Move with the mouse",
+    "settings.draggable.about": "Drag the card anywhere in the window so it does not cover what you need. It remembers the place.",
+    "settings.reset_place": "Put it back in the corner",
+    "toast.reset_place": "The player is back in its corner",
+    "settings.opacity": "Opacity, %"
 }
